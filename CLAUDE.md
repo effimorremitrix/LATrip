@@ -14,7 +14,7 @@ It is used on phones, in the field, often on bad hotel wifi and sometimes offlin
 
 The app is served behind a per-user password gate. The Worker verifies the password and hands the page a verified identity, and the app reshapes entirely around it. This is not cosmetic; the two people need different things.
 
-**Effi** — running an unpaid consulting handover with a family friend named Yigal, who runs an ocean freight business in Los Angeles. His tabs: היום, העבודה (the Tidelane handover and Deckhand delivery), יגאל (commercial and relationship items), לפני, טיסות, מסמכים, חירום.
+**Effi** — running an unpaid consulting handover with a family friend named Yigal, who runs an ocean freight business in Los Angeles. His tabs: היום, העבודה (the Tidelane handover and Deckhand delivery), מדריך (the Tidelane workflow guide), יגאל (commercial and relationship items), לפני, טיסות, מסמכים, חירום.
 
 **Ben** — 14, owns a small AI website-building business, is on the trip to learn. His tabs: היום, לפני, העבודה, המשימה, אנגלית, יומן, טיסות, מסמכים, חירום.
 
@@ -127,6 +127,29 @@ opposites on ownership:
 The plan assumes א׳. Anything that assumes a transfer, in a checklist row or a day
 plan, is Track A only and is marked `(מסלול א׳ בלבד)`. Never write copy that assumes
 one track without saying which.
+
+## The מדריך tab and the map
+
+**מדריך** is Effi's tab holding the Tidelane workflow guide, in two parts: how to work
+the system, and how to develop and deploy it. It is a **copy**, not the source. The
+source of truth is `docs/workflow-guide.he.md` in the Yigal repo
+(`effimorremitrix/yigal`). When that file changes, this tab does not; re-sync it
+deliberately rather than editing the copy and letting the two drift apart. It is
+collapsed into `<details>` sections because 293 lines of guide on a phone is a wall of
+text, and the sections open one at a time.
+
+**The map is not a map.** The היום tab renders each day's places as chips that link out
+to whatever map app the phone has, via `https://www.google.com/maps/search/?api=1&query=`
+with the place name. The app never draws a map itself, and it must stay that way: it
+has no network budget for tiles, it has to work offline, and Ben's own checklist already
+has him downloading offline LA maps, so the phone's map app is the map. Adding an
+embedded tile map would mean opening the CSP for an external script and tile server, a
+request on every pan, and a blank rectangle when offline. Do not do it.
+
+Place data lives in the `pl:` array on each `DAYS` entry in `src/app.html`, as
+`{n: 'Hebrew label', q: 'search query'}`. Queries are English for US landmarks because
+map apps resolve those far more reliably; the label the user sees stays Hebrew. The two
+fixed addresses come from Trip facts above and are quoted verbatim.
 
 ## Content that must stay accurate
 
