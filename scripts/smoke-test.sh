@@ -43,6 +43,20 @@ chk "anonymous visitor gets the login page" "$r" "login"
 grep -q 'id="t_work_effi"' "$BODY" && r=leaked || r=clean
 chk "no trip content served to anonymous visitor" "$r" "clean"
 
+code=$(curl -sS -o "$BODY" -w '%{http_code}' "$BASE/version")
+chk "GET /version responds" "$code" "200"
+# A stale deploy is otherwise indistinguishable from a broken one, so against a
+# real deployment this is the check that says the code you pushed is the code
+# running. `wrangler dev` does not apply --var, so locally it is informational.
+grep -q '"version":"unknown"' "$BODY" && r=unstamped || r=stamped
+case "$BASE" in
+  *127.0.0.1*|*localhost*)
+    echo "         version: $(cat "$BODY") (local dev, not stamped)" ;;
+  *)
+    chk "deployed version is stamped" "$r" "stamped"
+    echo "         version: $(cat "$BODY")" ;;
+esac
+
 echo "== credentials are actually checked =="
 chk "wrong password rejected"  "$(login_code effi   definitely-not-it)" "401"
 chk "unknown user rejected"    "$(login_code nobody x)"                 "401"

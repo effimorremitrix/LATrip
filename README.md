@@ -43,6 +43,30 @@ Then check the lock actually holds:
 bash scripts/smoke-test.sh https://latrip.<your-subdomain>.workers.dev
 ```
 
+## Which commit is live
+
+`npm run deploy` stamps the current commit into the Worker, so a running deploy can
+tell you what it is:
+
+```bash
+curl https://latrip.<your-subdomain>.workers.dev/version
+```
+
+```json
+{ "version": "bfbb59b", "deployed": "2026-09-09T19:30:44Z" }
+```
+
+Compare it with `git rev-parse --short HEAD`. If they differ, the deploy is stale and
+`git pull && npm run deploy` fixes it. A `-dirty` suffix means uncommitted changes were
+deployed; `unknown` means someone ran `wrangler deploy` directly instead of
+`npm run deploy`.
+
+The deploy script also warns before deploying a branch that is behind its remote, which
+is the mistake this endpoint exists to make visible.
+
+`/version` needs no login, so you can check it from a phone without signing in. It
+exposes only a short commit SHA.
+
 ## Passwords
 
 They live only in Cloudflare, as encrypted Worker secrets. They are not in this

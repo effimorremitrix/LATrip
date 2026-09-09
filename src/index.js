@@ -255,6 +255,16 @@ async function route(request, env) {
     return new Response("ok", { headers: { "Cache-Control": "no-store" } });
   }
 
+  /* Which commit is this? Answered before the secrets check, so an unconfigured
+     deploy can still be identified. Stamped by scripts/deploy.mjs; "unknown"
+     means someone ran wrangler deploy directly. */
+  if (url.pathname === "/version") {
+    return json({
+      version: env.APP_VERSION || "unknown",
+      deployed: env.APP_DEPLOYED || null,
+    });
+  }
+
   if (!env.AUTH_SECRET || !env.PASSWORD_EFFI || !env.PASSWORD_BEN) {
     return json(
       { ok: false, error: "not_configured", detail: "Missing AUTH_SECRET / PASSWORD_EFFI / PASSWORD_BEN" },

@@ -69,6 +69,7 @@ modules and served from it.
 | `POST /api/login` | password checked against a Cloudflare secret, sets the session cookie |
 | `GET /` with a valid cookie | app, with the verified user substituted into `%%TRIP_USER%%` |
 | `POST /api/logout` | clears the cookie; this is the יציאה button in the header |
+| `GET /version` | no login needed; the commit this deploy was built from |
 
 The cookie is `user.expiry.HMAC-SHA256(user.expiry, AUTH_SECRET)`, HttpOnly,
 Secure, SameSite=Lax, thirty days. Editing any field breaks the signature, so a
@@ -82,6 +83,12 @@ serves nothing. That is deliberate: an unconfigured deploy is locked, not open.
 
 After deploying, run `bash scripts/smoke-test.sh <url>`, which checks the auth
 boundary from outside.
+
+Deploy with `npm run deploy`, never bare `wrangler deploy`. The npm script runs
+`scripts/deploy.mjs`, which stamps the current commit into `APP_VERSION` and warns if
+the branch is behind its remote. `curl <url>/version` then says which commit is live,
+so a stale deploy is distinguishable from a broken one. This matters: a stale deploy
+has already been mistaken for a failed one once.
 
 **On rule 3 and telemetry.** The vault is still client-side only, document
 bytes never reach the Worker, and the sentence at `src/app.html:161` telling
