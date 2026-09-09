@@ -71,6 +71,12 @@ modules and served from it.
 | `POST /api/logout` | clears the cookie; this is the יציאה button in the header |
 | `GET /version` | no login needed; the commit this deploy was built from |
 
+The app response carries a strong `ETag` and `Cache-Control: private, no-cache`, so a
+reopened app revalidates instead of resending ~26 KB. `no-cache` means the cookie is
+still checked on every single open: a signed-out browser gets the login page, never a
+304 onto trip content it may no longer see. Everything else, the login page and all the
+API and status routes, stays `no-store`.
+
 The cookie is `user.expiry.HMAC-SHA256(user.expiry, AUTH_SECRET)`, HttpOnly,
 Secure, SameSite=Lax, thirty days. Editing any field breaks the signature, so a
 `ben` session cannot be rewritten into an `effi` one.

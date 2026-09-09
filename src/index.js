@@ -124,6 +124,17 @@ function readCookie(request, name) {
   return null;
 }
 
+/**
+ * Strong ETag over the exact body we would send. Hashing ~90 KB with SHA-256 is
+ * well under a millisecond, and deriving it from the body rather than from
+ * APP_VERSION means it can never go stale, including on a deploy that was not
+ * version-stamped.
+ */
+async function etagFor(body) {
+  const digest = await crypto.subtle.digest("SHA-256", enc.encode(body));
+  return `"${b64url(new Uint8Array(digest)).slice(0, 27)}"`;
+}
+
 /* ---------- session ---------- */
 
 async function issueSession(user, secret) {
@@ -294,5 +305,26 @@ async function route(request, env) {
     return html(LOGIN_HTML, 200, stale ? { "Set-Cookie": sessionCookie("", 0) } : {});
   }
 
-  return html(APP_HTML.replace("%%TRIP_USER%%", user));
+  /* The app is ~26 KB gzipped and this page is opened many times a day on bad
+     wifi, so it is worth not resending it unchanged. `private` keeps it out of
+     shared caches and `no-cache` forces revalidation on every open, so the
+     cookie is still checked every single time: a logged-out browser gets the
+     login page, never a 304 onto cached trip content. */
+  const body = APP_HTML.replace("%%TRIP_USER%%", user);
+  const etag = await etagFor(body);
+  const cacheHeaders = {
+    ETag: etag,
+    "Cache-Control": "private, no-cache",
+    /* The body differs per signed-in user, and the cookie is what selects it. */
+    Vary: "Cookie",
+  };
+
+  if (request.headers.get("If-None-Match") === etag) {
+    return new Response(null, {
+      status: 304,
+      headers: { ...SECURITY_HEADERS, ...cacheHeaders },
+    });
+  }
+
+  return html(body, 200, cacheHeaders);
 }

@@ -85,6 +85,18 @@ if [ -n "${TRIP_PW_EFFI:-}" ]; then
   chk "app served with the signed-in identity" "$r" "yes"
   grep -q '%%TRIP_USER%%' "$BODY" && r=leftover || r=clean
   chk "identity placeholder consumed" "$r" "clean"
+  # The app is ~26 KB gzipped and reopened many times a day, so it is served
+  # revalidated rather than resent. Prove the deployed Worker actually honours
+  # a conditional request, and that a signed-out one never gets a 304 onto
+  # content it is no longer entitled to see.
+  ETAG=$(curl -sS -b "$JAR" -D - -o /dev/null "$BASE/" | tr -d '\r' | awk 'tolower($1)=="etag:"{print $2}')
+  chk "app response carries an ETag" "$([ -n "$ETAG" ] && echo yes || echo no)" "yes"
+  chk "repeat open revalidates to 304" \
+    "$(curl -sS -b "$JAR" -H "If-None-Match: $ETAG" -o /dev/null -w '%{http_code} %{size_download}' "$BASE/")" \
+    "304 0"
+  chk "signed-out request with that ETag gets the login page, not a 304" \
+    "$(curl -sS -H "If-None-Match: $ETAG" -o /dev/null -w '%{http_code}' "$BASE/")" "200"
+
   curl -sS -b "$JAR" -c "$JAR" -o /dev/null -X POST "$BASE/api/logout"
   curl -sS -b "$JAR" -o "$BODY" "$BASE/" >/dev/null
   grep -q 'id="password"' "$BODY" && r=login || r=app

@@ -67,6 +67,18 @@ is the mistake this endpoint exists to make visible.
 `/version` needs no login, so you can check it from a phone without signing in. It
 exposes only a short commit SHA.
 
+## Why reopening the app is cheap
+
+The app page is about 26 KB gzipped and gets opened many times a day, often on bad
+wifi. It is served with a strong `ETag` and `Cache-Control: private, no-cache`, so the
+browser revalidates instead of re-downloading: a reopen costs a few hundred bytes
+rather than 26 KB, unless the deploy actually changed.
+
+`no-cache` is the important half. The browser must revalidate every time, so the Worker
+re-checks the session cookie on every open. Signing out, or an expired cookie, means the
+next open returns the login page rather than a 304 onto content the browser still has.
+The login page and every API route stay `no-store`.
+
 ## Passwords
 
 They live only in Cloudflare, as encrypted Worker secrets. They are not in this
