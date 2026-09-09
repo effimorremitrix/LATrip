@@ -94,12 +94,39 @@ visibility into password guessing.
 
 Deployment and rotation detail lives in README.md. Do not duplicate it here.
 
+## Tidelane, Deckhand and the two tracks
+
+Tidelane is Effi's container shipping product. **Deckhand** is its core: container and
+shipment numbers arrive by email, and today a person retypes them into INTTRA and ACE.
+Deckhand removes that retyping. It is the core deliverable of the two weeks and it owns
+session 3 on 26.9. The mechanism, whether UI automation, a real integration, or clean
+extraction that a human pastes, is deliberately undecided until the real emails are
+seen on 24.9. Do not decide it in copy.
+
+Deckhand is **not** live ACE and INTTRA integration. That stays mocked and out of
+bounds, because real access is a vendor agreement and not code. The app draws that line
+in three places and it must stay drawn.
+
+The two tracks are a live decision Yigal makes on the first morning, and they are
+opposites on ownership:
+
+| | מסלול א׳ | מסלול ב׳ |
+|---|---|---|
+| Tidelane becomes | how his company actually works | a product he uses, still Effi's |
+| Ownership | transfers to him on 3 October | never moves |
+| He is | the owner | the first design partner, free |
+| Two weeks enough | barely | no |
+
+The plan assumes א׳. Anything that assumes a transfer, in a checklist row or a day
+plan, is Track A only and is marked `(מסלול א׳ בלבד)`. Never write copy that assumes
+one track without saying which.
+
 ## Content that must stay accurate
 
 Some copy in this app is load-bearing and was written deliberately. Do not soften or "improve" it without asking:
 
 - Ben's seven session rules, especially rule 1 (phone stays in the pocket for three hours) and rule 7 (fill the journal before standing up, not in the evening).
-- Effi's four uncomfortable conversations in the יגאל tab: the USD 4,427.20 already paid, the one-sentence IP carve-out, the three-hour daily boundary, and the ownership transfer on 3 October.
+- Effi's four uncomfortable conversations in the יגאל tab: the USD 4,427.20 already paid, the one-sentence IP carve-out, the three-hour daily boundary, and the ownership transfer on 3 October. Conversations 2 and 4 each carry a מסלול א׳ version and a מסלול ב׳ version, because the tracks are opposites on ownership. Both versions must stay; deleting either leaves the wrong script to read aloud.
 - The security checklist in Effi's העבודה tab. Those items must close before real shipment data enters Tidelane.
 - The English pitch script in Ben's המשימה tab. It is written to be spoken by a nervous 14-year-old, not to read well.
 
