@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>לוס אנג'לס 2026 · מור</title>
+<script>/* replaced by the Worker with the signed-in user */
+  window.__TRIP_USER__ = "%%TRIP_USER%%";</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --petrol:#0F2A33; --petrol2:#1B4450; --paper:#FAF7F0; --paper2:#F0EBE0;
+    --hivis:#F2C230; --signal:#D94E28; --slate:#6B7B80; --line:#DCD5C7;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--petrol);font-family:'Assistant',-apple-system,'Segoe UI',Arial,sans-serif;font-size:17px;line-height:1.6;padding-bottom:44px}
+  h1,h2,h3{font-family:'Rubik',-apple-system,Arial,sans-serif;font-weight:900;letter-spacing:-.01em;line-height:1.2;margin:0}
+  .wrap{max-width:660px;margin:0 auto;padding:0 18px}
+
+
+  header{background:var(--petrol);color:var(--paper);padding:16px 0 0}
+  .brand{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand h1{font-size:23px;color:var(--paper)}
+  .who{background:var(--hivis);color:var(--petrol);border:0;font-family:'Rubik';font-weight:700;font-size:14px;padding:6px 12px;cursor:pointer}
+  .counter{margin-top:12px;display:flex;align-items:flex-end;gap:10px;border-top:1px solid #24505E;padding-top:11px}
+  .counter .n{font-family:'Rubik';font-weight:900;font-size:40px;color:var(--hivis);line-height:.9}
+  .counter .lbl{font-size:14px;color:#93A9AF;padding-bottom:4px;font-weight:600}
+
+  nav{background:var(--petrol);position:sticky;top:0;z-index:20;border-bottom:1px solid #24505E}
+  .tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;padding:10px 18px 0;max-width:660px;margin:0 auto}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{background:none;border:0;color:#8FA6AD;font-family:'Rubik';font-weight:700;font-size:15px;padding:6px 12px 12px;white-space:nowrap;cursor:pointer;border-bottom:3px solid transparent}
+  .tabs button.on{color:var(--paper);border-bottom-color:var(--hivis)}
+  .tabs button:focus-visible{outline:2px solid var(--hivis);outline-offset:2px}
+
+  section{display:none;padding-top:22px}
+  section.on{display:block}
+  h2{font-size:22px;margin:26px 0 10px}
+  h2:first-child{margin-top:0}
+  h3{font-size:17px;font-weight:700;margin:20px 0 6px}
+  p{margin:0 0 12px}
+  .note{color:var(--slate);font-size:15px}
+  .warn{background:var(--paper2);border-right:5px solid var(--signal);padding:13px 15px;margin:0 0 16px}
+  .warn b{color:var(--signal)}
+
+  .today{background:var(--petrol);color:var(--paper);padding:18px;margin-bottom:20px;border-right:5px solid var(--hivis)}
+  .today .d{font-size:13px;color:var(--hivis);font-weight:700;font-family:'Rubik';margin-bottom:4px}
+  .today h2{color:var(--paper);font-size:24px;margin:0 0 10px}
+  .today .row{display:flex;gap:10px;padding:7px 0;border-top:1px solid #24505E;font-size:16px}
+  .today .row b{color:var(--hivis);font-weight:700;min-width:60px;font-family:'Rubik';font-size:14px;padding-top:2px;flex:0 0 60px}
+
+  .blk{border-top:2px solid var(--petrol);padding-top:12px;margin-bottom:26px}
+  .prog{height:8px;background:var(--paper2);margin:8px 0 16px}
+  .prog i{display:block;height:100%;background:var(--hivis);width:0;transition:width .25s}
+  label.ck{display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  label.ck input{position:absolute;opacity:0;width:0;height:0}
+  label.ck .box{flex:0 0 22px;width:22px;height:22px;border:2px solid var(--petrol);margin-top:3px;display:grid;place-items:center;font-size:14px;color:transparent;font-weight:900}
+  label.ck input:checked + .box{background:var(--hivis);border-color:var(--hivis);color:var(--petrol)}
+  label.ck input:checked ~ .tx{color:var(--slate);text-decoration:line-through}
+  label.ck input:focus-visible + .box{outline:2px solid var(--signal);outline-offset:2px}
+  .grp{font-family:'Rubik';font-weight:700;font-size:14px;color:var(--slate);margin:22px 0 2px}
+
+  ol.rules{counter-reset:r;list-style:none;padding:0;margin:0}
+  ol.rules li{counter-increment:r;position:relative;padding:12px 40px 12px 0;border-bottom:1px solid var(--line)}
+  ol.rules li::before{content:counter(r);position:absolute;right:0;top:12px;font-family:'Rubik';font-weight:900;font-size:20px;color:var(--hivis);-webkit-text-stroke:.6px var(--petrol)}
+  ul.dot{margin:0 0 14px;padding-right:20px}
+  ul.dot li{margin-bottom:7px}
+
+  table{width:100%;border-collapse:collapse;font-size:15px;margin-bottom:16px}
+  th,td{text-align:right;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:'Rubik';font-size:13px;color:var(--slate);font-weight:700;border-bottom:2px solid var(--petrol)}
+  td.day{white-space:nowrap;font-weight:700;width:80px}
+
+  .ph{border-bottom:1px solid var(--line);padding:11px 0}
+  .ph .en{direction:ltr;text-align:left;font-family:'Rubik';font-weight:500;font-size:17px}
+  .ph .he{color:var(--slate);font-size:15px;margin-top:2px}
+  .ph .tr{color:var(--petrol2);font-size:14px;font-weight:600;margin-top:2px}
+  .script{background:var(--paper2);padding:16px;border-right:5px solid var(--petrol);margin-bottom:16px}
+  .script .en{direction:ltr;text-align:left;font-family:'Rubik';font-weight:500;font-size:17px;line-height:1.65}
+  .script em{background:var(--hivis);font-style:normal;padding:0 3px}
+
+  textarea,input[type=text],select{width:100%;font-family:'Assistant';font-size:16px;padding:11px;border:1.5px solid var(--line);background:#fff;color:var(--petrol);border-radius:0}
+  textarea{min-height:84px;resize:vertical}
+  textarea:focus,input[type=text]:focus,select:focus{outline:2px solid var(--hivis);border-color:var(--petrol)}
+  .qlab{font-weight:700;margin:14px 0 5px;font-size:16px}
+  button.act{background:var(--petrol);color:var(--paper);border:0;font-family:'Rubik';font-weight:700;font-size:16px;padding:12px 22px;cursor:pointer;margin-top:14px}
+  button.act:active{background:var(--petrol2)}
+  button.ghost{background:none;border:1.5px solid var(--line);color:var(--petrol2);font-family:'Rubik';font-weight:700;font-size:14px;padding:7px 13px;cursor:pointer}
+  .saved{color:var(--petrol2);font-weight:700;font-size:15px;margin-right:12px}
+  .entry{border-top:2px solid var(--petrol);padding:12px 0;margin-top:14px}
+  .entry .dt{font-family:'Rubik';font-weight:700;color:var(--slate);font-size:14px;margin-bottom:6px}
+  .entry p{white-space:pre-wrap;margin:0 0 8px;font-size:16px}
+
+  /* documents */
+  .drop{border:2px dashed var(--line);padding:20px;text-align:center;margin-bottom:16px;background:#fff}
+  .drop input[type=file]{display:none}
+  .drop label.pick{display:inline-block;background:var(--petrol);color:var(--paper);font-family:'Rubik';font-weight:700;font-size:16px;padding:12px 22px;cursor:pointer}
+  .doc{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+  .doc .thumb{flex:0 0 58px;width:58px;height:58px;background:var(--paper2);display:grid;place-items:center;overflow:hidden;font-family:'Rubik';font-weight:900;font-size:13px;color:var(--slate)}
+  .doc .thumb img{width:100%;height:100%;object-fit:cover}
+  .doc .meta{flex:1;min-width:0}
+  .doc .meta b{display:block;font-size:16px}
+  .doc .meta span{color:var(--slate);font-size:14px}
+  .doc .acts{display:flex;flex-direction:column;gap:6px}
+  .doc .acts a,.doc .acts button{font-family:'Rubik';font-weight:700;font-size:13px;padding:5px 10px;border:1.5px solid var(--line);background:none;color:var(--petrol2);cursor:pointer;text-decoration:none;text-align:center}
+  .doc .acts button.del{color:var(--signal);border-color:#EBC7BB}
+
+  .sos{background:var(--signal);color:#fff;padding:16px;margin-bottom:18px;border-right:5px solid #8F2F14}
+  .sos .n{font-family:'Rubik';font-weight:900;font-size:40px;line-height:1}
+  .sos p{margin:6px 0 0;font-size:16px}
+  .fields label{display:block;font-weight:700;font-size:15px;margin:12px 0 4px}
+  a{color:var(--petrol2)}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <h1 id="hdrTitle">לוס אנג'לס</h1>
+      <button class="who" id="whoBtn">יציאה</button>
+    </div>
+    <div class="counter" id="counter"></div>
+  </div>
+</header>
+
+<nav><div class="tabs" id="tabs"></div></nav>
+
+<div class="wrap">
+
+<!-- ===== SHARED: TODAY ===== -->
+<section id="t_today">
+  <div id="todayCard"></div>
+  <div class="blk"><h2>כל הימים</h2><table id="allDays"></table></div>
+</section>
+
+<!-- ===== SHARED: FLIGHTS ===== -->
+<section id="t_flights">
+  <h2>הטיסות</h2>
+  <p class="note">קוד הזמנה <span dir="ltr">9JBMBP</span> · אוסטריאן איירליינס ולופטהנזה · מחלקת תיירים, כרטיס Economy Green</p>
+  <table>
+    <tr><th>מתי</th><th>טיסה</th><th>מסלול</th></tr>
+    <tr><td class="day">ד׳ 23.9</td><td>OS84</td><td>נתב״ג טרמינל 3, 06:00 ← וינה טרמינל 3, 08:45</td></tr>
+    <tr><td class="day">ד׳ 23.9</td><td>OS51</td><td>וינה 09:55 ← לוס אנג׳לס טרמינל B, 13:05 · בואינג 777</td></tr>
+    <tr><td class="day">ב׳ 5.10</td><td>LH457</td><td>לוס אנג׳לס 15:05 ← פרנקפורט 11:00 למחרת · בואינג 747-8</td></tr>
+    <tr><td class="day">ג׳ 6.10</td><td>LH694</td><td>פרנקפורט 14:00 ← תל אביב 19:15</td></tr>
+  </table>
+  <div class="warn"><b>בווינה יש שעה ועשר דקות בלבד.</b> זה חוקי אבל בלי שום מרווח. כל מה שאי אפשר להפסיד נמצא בתיק היד.</div>
+  <div class="warn"><b>לא נבחרו מושבים באף אחת מארבע הטיסות.</b> אם לא בוחרים מראש, המערכת תפצל את שניכם.</div>
+  <p><b>כבודה לכל נוסע:</b> מזוודה אחת עד 23 ק״ג, תיק עלייה עד 8 ק״ג, ותיק אישי. את ה-8 ק״ג שוקלים בווינה ברצינות.</p>
+  <p class="note">משך הטיסה הלוך 17 שעות ו-5 דקות, חזור 18 שעות ו-10 דקות. הפרש השעות בין ישראל ללוס אנג׳לס: 10 שעות.</p>
+</section>
+
+<!-- ===== SHARED: DOCUMENTS ===== -->
+<section id="t_docs">
+  <h2>מסמכים</h2>
+  <p class="note">דרכון, ESTA, ביטוח, כרטיסי טיסה. הקבצים נשמרים במכשיר הזה בלבד ולא נשלחים לשום מקום.</p>
+  <div class="drop">
+    <div class="qlab" style="margin-top:0">סוג המסמך</div>
+    <select id="docLabel">
+      <option>דרכון</option>
+      <option>אישור ESTA</option>
+      <option>כרטיס טיסה / כרטיס עלייה</option>
+      <option>ביטוח נסיעות</option>
+      <option>מכתב הסכמה חתום</option>
+      <option>רישיון נהיגה בינלאומי</option>
+      <option>חוזה שכירות רכב</option>
+      <option>אחר</option>
+    </select>
+    <p class="note" style="margin:14px 0 10px">תמונות מוקטנות אוטומטית. קובץ PDF גדול מ-3.5 מגה לא יישמר.</p>
+    <label class="pick" for="docFile">בחר קובץ או צלם</label>
+    <input type="file" id="docFile" accept="image/*,application/pdf">
+    <div class="note" id="docStatus" style="margin-top:12px"></div>
+  </div>
+  <div id="docList"></div>
+</section>
+
+<!-- ===== EFFI: WORK ===== -->
+<section id="t_work_effi">
+  <h2>ההחלטה של הבוקר הראשון</h2>
+  <p>לפני שנוגעים בקוד, יגאל צריך לבחור. הכול למטה תלוי בזה.</p>
+  <table>
+    <tr><th></th><th>מסלול א׳</th><th>מסלול ב׳</th></tr>
+    <tr><td class="day">מה זה</td><td>Tidelane הופכת לאיך שהחברה שלו באמת עובדת</td><td>Tidelane הופכת למוצר שהוא מוכר, בסגנון BuyCo</td></tr>
+    <tr><td class="day">התוצר</td><td>המשלוחים האמיתיים שלו במערכת, אנשים אמיתיים, QuickBooks מחובר</td><td>דמו מחודד, לקוח ראשון מוגדר, תמחור, ורשימה כנה של מה חסר</td></tr>
+    <tr><td class="day">בר-ביצוע בשבועיים</td><td>כן, בקושי</td><td>לא</td></tr>
+  </table>
+  <div class="warn"><b>התוכנית מניחה מסלול א׳.</b> אם הוא רוצה ב׳, זה צריך להיאמר ביום הראשון, לא באמצע.</div>
+
+  <div class="blk">
+    <h2>מה קיים באמת</h2>
+    <table>
+      <tr><td class="day">נתונים</td><td>זרועים. 18 ארגונים, 7 משתמשים, 42 משלוחים, אף אחד מהם לא שלו</td></tr>
+      <tr><td class="day">חשבונות</td><td>שבעה חשבונות דמו עם סיסמה משותפת, מופיעים בדף שנקרא לפני התחברות</td></tr>
+      <tr><td class="day">QuickBooks</td><td>אמיתי. OAuth, משיכת חשבוניות, קישור למשלוח. זה מה שיכול לעלות לאוויר</td></tr>
+      <tr><td class="day">ACE ו-INTTRA</td><td>מוק בלבד. הממפים החיים זורקים not implemented במכוון</td></tr>
+      <tr><td class="day">אחסון</td><td>רץ על חשבון Cloudflare שלי, תחת הסאב-דומיין שלי</td></tr>
+    </table>
+    <p>הפער בין זה לבין "יגאל מנהל את העסק על זה" הוא לא פער שצפייה סוגרת. הוא פער של נתונים אמיתיים, חשבונות אמיתיים, בעלות ואינטגרציה אחת אמיתית.</p>
+  </div>
+
+  <div class="blk">
+    <h2>שבעת הסשנים</h2>
+    <table>
+      <tr><th>יום</th><th>מטרה</th></tr>
+      <tr><td class="day">ה׳ 24.9</td><td>צפייה בלבד. Tidelane לא נפתחת. רוצה לראות את העבודה לפני שאני רואה את התוכנה.</td></tr>
+      <tr><td class="day">ו׳ 25.9</td><td>המסך מול הרשומות האמיתיות. כל שדה חסר, שגוי, או כזה שהוא לעולם לא ימלא.</td></tr>
+      <tr><td class="day">ש׳ 26.9</td><td>הצדדים האמיתיים ומיפוי לחמשת סוגי הארגון. מי מקבל admin, מי ops, מי viewer.</td></tr>
+      <tr><td class="day">א׳ 27.9</td><td>חריגים. גלגול לאונייה הבאה, מכולה מפוצלת, תיקון הזמנה, דמורג׳. כאן מתברר אם המודל שורד.</td></tr>
+      <tr><td class="day">ב׳ 28.9</td><td>חמישה עד עשרה משלוחים אמיתיים נכנסים. מפסיקים להסתכל על נתונים זרועים.</td></tr>
+      <tr><td class="day">ג׳ 29.9</td><td>QuickBooks על החברה האמיתית שלו. משיכה, התאמה מול משלוח אמיתי.</td></tr>
+      <tr><td class="day">ד׳ 30.9</td><td>מסירה. הוא פותח משלוח ומאשר מסמך לבד, בחשבון שלו.</td></tr>
+      <tr><td class="day">ו׳ 2.10</td><td>רזרבה: תיקונים ואבטחה.</td></tr>
+      <tr><td class="day">ש׳ 3.10</td><td>רזרבה: נהלים, בעלות, סגירה.</td></tr>
+    </table>
+  </div>
+
+  <div class="blk">
+    <h2>הגדרת סיום</h2>
+    <p class="note">הביקור הצליח אם כל השורות מסומנות ב-3.10. לא פחות.</p>
+    <div class="prog"><i id="prog_dod"></i></div>
+    <div id="ck_dod"></div>
+  </div>
+
+  <div class="blk">
+    <h2>לפני שנתון אמיתי אחד נכנס</h2>
+    <div class="prog"><i id="prog_sec"></i></div>
+    <div id="ck_sec"></div>
+  </div>
+
+  <div class="blk">
+    <h2>יומן סשן</h2>
+    <p class="note">למלא בסוף כל בוקר, לא בערב.</p>
+    <div class="qlab">מה ראיתי (יבש, בלי פרשנות)</div><textarea id="s1"></textarea>
+    <div class="qlab">שדות במודל שחסרים, שגויים או לא בשימוש</div><textarea id="s2"></textarea>
+    <div class="qlab">חריגים: "בדרך כלל, חוץ מ..."</div><textarea id="s3"></textarea>
+    <div class="qlab">החלטות שיגאל מקבל והמערכת לא יודעת לקבל</div><textarea id="s4"></textarea>
+    <div class="qlab">מה נכנס לרשימת ההמתנה ולא נבנה</div><textarea id="s5"></textarea>
+    <div class="qlab">פריט אבטחה או בעלות שנסגר היום</div><textarea id="s6"></textarea>
+    <div class="qlab">ביטחון שנעמוד בהגדרת הסיום (1 עד 5)</div><textarea id="s7" style="min-height:44px"></textarea>
+    <button class="act" id="saveSession">שמור סשן</button><span class="saved" id="savedSession"></span>
+    <div id="sessionEntries"></div>
+  </div>
+</section>
+
+<!-- ===== EFFI: YIGAL ===== -->
+<section id="t_yigal">
+  <h2>מה לבקש ממנו לפני הנחיתה</h2>
+  <div class="prog"><i id="prog_ask"></i></div>
+  <div id="ck_ask"></div>
+
+  <div class="blk">
+    <h2>ארבע שיחות לא נוחות, ומתי</h2>
+    <h3>1. הכסף שכבר יצא · לפני הטיסה</h3>
+    <p>4,427 דולר שולמו בכרטיס. אם זה הכרטיס שלך, זה יושב עליך מול סיכום בעל פה. גם מה ש"מארח" כולל: רכב, דלק, אוכל, פעילויות לשלושה עשר יום.</p>
+    <div class="script"><div class="en" dir="rtl" style="text-align:right;font-family:'Assistant'">"לפני שאנחנו טסים, בוא נסגור את הכסף. הכרטיסים שולמו מהכרטיס שלי; איך אתה רוצה לסדר את זה? ומה בדיוק אתה מכסה בזמן שאנחנו שם, מעבר לדירה?"</div></div>
+
+    <h3>2. בעלות קניין רוחני · בוקר ראשון</h3>
+    <p>המערכת שלו לחלוטין. משפט אחד שומר על שאר העבודה שלך נקייה.</p>
+    <div class="script"><div class="en" dir="rtl" style="text-align:right;font-family:'Assistant'">"Tidelane שלך, בלי הגבלה. אני רק מבקש שנסכים שהשיטות והארכיטקטורה נשארות שלי לשימוש בעבודות אחרות שאין להן קשר אליך."</div></div>
+
+    <h3>3. גבול הזמן · בוקר ראשון, בקול</h3>
+    <p>שלוש שעות שהופכות לשמונה זה מצב הכשל הצפוי. תגיד את השעה ותעמוד בה מהיום הראשון, אחרת אין נקודת עצירה.</p>
+
+    <h3>4. העברת בעלות · 3 באוקטובר</h3>
+    <p>חשבון Cloudflare, הוורקר, מסד ה-D1, ואפליקציית Intuit. אם הכול נשאר על שמך, הוא לא באמת מחזיק את העסק שלו.</p>
+  </div>
+
+  <div class="blk">
+    <h2>מה מחוץ לגבולות</h2>
+    <ul class="dot">
+      <li>ACE ו-INTTRA חיים. נשארים במוק. גישה אמיתית היא הסכם ספק, לא קוד.</li>
+      <li>מיתוג מחדש או עיצוב מחדש.</li>
+      <li>הגירה של כל היסטוריית המשלוחים. טוענים מדגם עובד, לא ארכיון.</li>
+      <li>פתיחת חשבונות ללקוחות, למובילים ולמשלחים שלו.</li>
+      <li>רעיונות שעולים תוך כדי. נכנסים לרשימה, נפתחים ב-3.10.</li>
+      <li>תמיכה פתוחה אחרי 5 באוקטובר. לסכם לפני הטיסה, לא בהודעה בדצמבר.</li>
+    </ul>
+  </div>
+
+  <div class="blk">
+    <h2>בן</h2>
+    <p>בן בן 14 ובא ללמוד. הוא לא אחראי לשום תוצר. אתה מוביל ואתה עונה על הכול. מה שסוכם בינו לבין יגאל על תשלום הוא ביניהם, אבל שום חלק מהתוצאה לא תלוי בו, וכדאי שזה ייאמר במפורש.</p>
+  </div>
+</section>
+
+<!-- ===== EFFI: PRE ===== -->
+<section id="t_pre_effi">
+  <h2>לפני הטיסה</h2>
+  <div class="warn"><b>יום כיפור הוא 20 עד 21 בספטמבר.</b> המדינה נעצרת. כל סידור חייב להסתיים עד שבת 19.9, וזה גם המועד האחרון ל-ESTA בגלל חלון 72 השעות.</div>
+  <div class="prog"><i id="prog_pre_effi"></i></div>
+  <div id="ck_pre_effi"></div>
+</section>
+
+<!-- ===== BEN: PRE ===== -->
+<section id="t_pre_ben">
+  <h2>מה לוקחים</h2>
+  <p class="note">סמן כל דבר שכבר ארוז או מוכן. זה נשמר, אז אפשר לחזור לזה.</p>
+  <div class="prog"><i id="prog_pre_ben"></i></div>
+  <div id="ck_pre_ben"></div>
+</section>
+
+<!-- ===== BEN: WORK ===== -->
+<section id="t_work_ben">
+  <h2>למה אתה שם בבקרים</h2>
+  <p>יגאל עובד בעולם ההובלה הימית: מכולות שנוסעות באוניות בין נמלים, עם לקוח ששולח, חברת ספנות שמובילה, ומישהו שמקבל בצד השני. אבא בנה לו מערכת שמנהלת את כל זה, ובשבועיים האלה בודקים אם היא באמת מתאימה לאיך שיגאל עובד במציאות.</p>
+  <p>מה שאתה הולך לראות זה לא בניית תוכנה. זה פירוק של עסק חי לחלקים: מה קורה, מי מחליט, איפה זה נשבר. רוב האנשים לא רואים את זה עד גיל 30.</p>
+  <p class="note">אבא מוביל והוא אחראי לכל התוצרים. אתה לא צריך לפתור, לתקן או להרשים אף אחד. התפקיד שלך הוא לראות ולתעד.</p>
+
+  <div class="blk">
+    <h2>המערכת נקראת Tidelane</h2>
+    <p>תיכנס אליה לפני הטיסה ותסתובב בכל המסכים, כדי שביום הראשון תבין על מה מדברים.</p>
+    <p><a href="https://yigal.effi-mor-e04.workers.dev/" dir="ltr">yigal.effi-mor-e04.workers.dev</a></p>
+    <p class="note">חשבון לצפייה בלבד: <span dir="ltr">viewer@tidelane.demo</span> · סיסמה <span dir="ltr">tidelane-demo</span>. אלה נתוני הדגמה, לא נתונים אמיתיים של אף אחד.</p>
+    <h3>המסכים</h3>
+    <ul class="dot">
+      <li><b>Control Tower</b> — מסך הבית, מה קורה עכשיו וממה צריך להיבהל</li>
+      <li><b>Shipments</b> — כל המשלוחים, ובכל אחד ציר זמן, מכולות, מסמכים וצדדים</li>
+      <li><b>New Booking</b> — אשף בארבעה שלבים שפותח משלוח חדש</li>
+      <li><b>Track &amp; Trace</b> — מפת עולם עם מיקומי אוניות</li>
+      <li><b>Invoices</b> — חשבוניות שנמשכות מ-QuickBooks ומתחברות למשלוח שהן מחייבות</li>
+      <li><b>Analytics</b> — נפחים, חלוקה בין חברות ספנות, עמידה בזמנים, פליטות</li>
+    </ul>
+    <p class="note">שאלה טובה לשאול את אבא בטיסה: למה כל משתמש רואה משלוחים אחרים?</p>
+  </div>
+
+  <div class="blk">
+    <h2>שבעה כללים לסשן</h2>
+    <ol class="rules">
+      <li>הטלפון בכיס. שלוש שעות. אין יוצא מן הכלל.</li>
+      <li>אל תשאל באמצע. תרשום את השאלה ותשאל בסוף הסשן.</li>
+      <li>אתה אורח בבית של מישהו ובעסק של מישהו. נעליים, כוס, כיסא, דלת. שים לב.</li>
+      <li>אל תתקן את יגאל, גם אם אתה בטוח שהוא טועה. הדרך שבה הוא עובד היא המידע.</li>
+      <li>אם יגאל אומר משהו שאתה לא מבין, תרשום את המילה בדיוק כמו שהיא נשמעה.</li>
+      <li>אל תצלם ואל תשתף כלום מהעסק שלו בלי לשאול.</li>
+      <li>בסוף כל סשן, לפני שאתה קם, תמלא את היומן. לא בערב. מיד.</li>
+    </ol>
+  </div>
+
+  <div class="blk">
+    <h2>ארבע שאלות לרשום כל בוקר</h2>
+    <ul class="dot">
+      <li><b>מה הוא עשה?</b> תיאור יבש, בלי פרשנות.</li>
+      <li><b>מה עצבן אותו?</b> כל רגע של תסכול הוא מקום שאפשר לתקן.</li>
+      <li><b>מה הוא עשה בלי לחשוב?</b> דברים אוטומטיים הם הכי קשים לאוטומציה, כי הוא לא יודע להסביר אותם.</li>
+      <li><b>מתי הוא אמר "בדרך כלל, חוץ מ..."?</b> המשפט הכי חשוב בכל הטיול. תרשום כל אחד.</li>
+    </ul>
+  </div>
+
+  <div class="blk">
+    <h2>לוח הסשנים</h2>
+    <table>
+      <tr><td class="day">ה׳ 24.9</td><td>רק לצפות. המערכת בכלל לא נפתחת היום.</td></tr>
+      <tr><td class="day">ו׳ 25.9</td><td>משווים בין המסך לרשומות האמיתיות של יגאל.</td></tr>
+      <tr><td class="day">ש׳ 26.9</td><td>מי הם הצדדים האמיתיים, ומי מקבל איזו הרשאה.</td></tr>
+      <tr><td class="day">א׳ 27.9</td><td>חריגים. הבוקר הכי חשוב בשבוע.</td></tr>
+      <tr><td class="day">ב׳ 28.9</td><td>מכניסים משלוחים אמיתיים למערכת.</td></tr>
+      <tr><td class="day">ג׳ 29.9</td><td>מחברים את QuickBooks האמיתי.</td></tr>
+      <tr><td class="day">ד׳ 30.9</td><td>מסירה. יגאל פותח משלוח אמיתי לבד.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ===== BEN: MISSION ===== -->
+<section id="t_mission">
+  <h2>המשימה שלך</h2>
+  <p>ביום שישי 2.10, אחרי הסשן, נוסעים לסנטה מוניקה ולווניס. שם יושבות המון חברות טכנולוגיה, והרחובות מלאים בעסקים קטנים עם אתרים בינוניים.</p>
+  <p><b>המשימה: לגשת לשלושה עסקים אמיתיים, לבד, באנגלית, ולנהל שיחה עם הבעלים.</b></p>
+  <p class="note">הצלחה נמדדת בשלוש שיחות, לא בשלושה לקוחות. אף אחד לא קונה אתר מילד שנכנס מהרחוב. אתה מתאמן על החלק שאי אפשר ללמוד מיוטיוב: להיכנס לחדר ולפתוח פה.</p>
+
+  <div class="blk">
+    <h2>לפני שנכנסים</h2>
+    <ul class="dot">
+      <li>תפתח את האתר של העסק בטלפון ותמצא דבר אחד ספציפי. לא "האתר לא יפה", אלא "אין שעות פתיחה" או "לא נטען בטלפון".</li>
+      <li>תיכנס בשעה שקטה. לא בשעת ארוחת צהריים.</li>
+      <li>תבקש שתי דקות. ותעמוד במילה.</li>
+    </ul>
+  </div>
+
+  <div class="blk">
+    <h2>הפתיחה, מילה במילה</h2>
+    <div class="script"><div class="en">Hi, do you have two minutes? My name is Ben, I'm fourteen, I'm visiting from Israel. I build websites using AI. I looked at your site before I came in and I noticed <em>[the one thing]</em>. Can I ask you two quick questions about it?</div></div>
+    <p class="note">תתאמן על זה בקול רם בבית לפני הטיסה. עשר פעמים. עד שזה לא נשמע קרוא.</p>
+  </div>
+
+  <div class="blk">
+    <h2>ארבע השאלות</h2>
+    <p class="note">שאלות של גילוי, לא של מכירה. המטרה היא להבין איך הוא חושב.</p>
+    <div class="ph"><div class="en">Where do most of your customers find you?</div><div class="he">איפה רוב הלקוחות שלך מוצאים אותך?</div></div>
+    <div class="ph"><div class="en">What is the one thing on your website you wish worked better?</div><div class="he">מה הדבר האחד באתר שהיית רוצה שיעבוד טוב יותר?</div></div>
+    <div class="ph"><div class="en">Who built it, and how long ago?</div><div class="he">מי בנה אותו, ולפני כמה זמן?</div></div>
+    <div class="ph"><div class="en">If it brought you ten more customers a month, what would that be worth to you?</div><div class="he">אם הוא היה מביא לך עשרה לקוחות נוספים בחודש, כמה זה שווה לך?</div></div>
+  </div>
+
+  <div class="blk">
+    <h2>הסגירה</h2>
+    <div class="script"><div class="en">Thank you, that was really useful. Can I email you one short idea? No charge, no catch. Do you have a card?</div></div>
+    <p>אם הוא נותן כרטיס, זו הצלחה. אם הוא אומר לא, גם זו הצלחה, כי סיימת שיחה. תודה, יוצאים, ממשיכים לעסק הבא.</p>
+  </div>
+
+  <div class="blk">
+    <h2>אחרי כל שיחה</h2>
+    <p>תעצור ברחוב, תפתח את היומן ותרשום שלושה דברים: מה אמרת, מה הוא ענה, מה תשנה בשיחה הבאה. שתי דקות. אחרת זה נעלם.</p>
+  </div>
+</section>
+
+<!-- ===== BEN: ENGLISH ===== -->
+<section id="t_eng">
+  <h2>אנגלית שימושית</h2>
+  <p class="note">התעתיק בסוגריים הוא רק עזרה. מותר להישמע ישראלי, אסור להישמע לא מובן. תדבר לאט ובקול.</p>
+
+  <h3>בביקורת דרכונים</h3>
+  <p class="note">אבא מדבר. אם פונים אליך ישירות, תענה קצר ואמיתי, תסתכל בעיניים, בלי בדיחות.</p>
+  <div class="ph"><div class="en">I'm here on vacation with my father.</div><div class="he">אני כאן בחופשה עם אבא שלי.</div></div>
+  <div class="ph"><div class="en">Thirteen days. We fly back on October fifth.</div><div class="he">שלושה עשר ימים. חוזרים ב-5 באוקטובר.</div></div>
+  <div class="ph"><div class="en">We're staying at a family friend's apartment in Los Angeles.</div><div class="he">אנחנו מתארחים בדירה של חבר משפחה בלוס אנג'לס.</div></div>
+
+  <h3>במסעדה</h3>
+  <div class="ph"><div class="en">Could I get the check, please?</div><div class="he">אפשר לקבל את החשבון?</div><div class="tr">(קוד איי גט דה צ׳ק, פליז)</div></div>
+  <div class="ph"><div class="en">Is the tip included?</div><div class="he">האם הטיפ כלול?</div></div>
+  <div class="ph"><div class="en">Can I have tap water, please?</div><div class="he">אפשר מים מהברז? חינם, תמיד</div></div>
+  <div class="ph"><div class="en">Does this have nuts in it?</div><div class="he">יש בזה אגוזים?</div></div>
+  <div class="ph"><div class="en">To go, please.</div><div class="he">לקחת, בבקשה.</div></div>
+
+  <h3>בחנות וברחוב</h3>
+  <div class="ph"><div class="en">How much is this with tax?</div><div class="he">כמה זה עולה כולל מס? המחיר על המדף לא כולל מס</div></div>
+  <div class="ph"><div class="en">Excuse me, how do I get to...?</div><div class="he">סליחה, איך מגיעים ל...?</div></div>
+  <div class="ph"><div class="en">Sorry, could you say that again, slower?</div><div class="he">סליחה, אפשר לחזור על זה לאט יותר?</div><div class="tr">המשפט הכי שימושי בכל הטיול</div></div>
+  <div class="ph"><div class="en">I'm with my dad, he's right over there.</div><div class="he">אני עם אבא שלי, הוא שם.</div></div>
+
+  <h3>בעבודה אצל יגאל</h3>
+  <div class="ph"><div class="en">Can I write that down?</div><div class="he">אפשר לרשום את זה?</div></div>
+  <div class="ph"><div class="en">What does that word mean?</div><div class="he">מה המילה הזאת אומרת?</div></div>
+  <div class="ph"><div class="en">Why did you choose that one?</div><div class="he">למה בחרת דווקא בזה?</div></div>
+  <div class="ph"><div class="en">Does that happen often?</div><div class="he">זה קורה הרבה?</div></div>
+
+  <h3>מילים מעולם המכולות</h3>
+  <p class="note">בדיוק המונחים שמופיעים במסכים של Tidelane.</p>
+  <div class="ph"><div class="en">Shipment</div><div class="he">משלוח. הרשומה המרכזית במערכת</div></div>
+  <div class="ph"><div class="en">Container / TEU</div><div class="he">מכולה. TEU היא יחידת מידה: מכולה באורך 20 רגל</div></div>
+  <div class="ph"><div class="en">Shipper</div><div class="he">מי ששולח את הסחורה. הלקוח</div></div>
+  <div class="ph"><div class="en">Consignee</div><div class="he">מי שמקבל את הסחורה בצד השני</div></div>
+  <div class="ph"><div class="en">Carrier</div><div class="he">חברת הספנות שמובילה בפועל</div></div>
+  <div class="ph"><div class="en">Forwarder</div><div class="he">משלח בינלאומי. מסדר את כל המהלך במקום הלקוח</div></div>
+  <div class="ph"><div class="en">Booking</div><div class="he">הזמנת מקום על אונייה</div></div>
+  <div class="ph"><div class="en">Lane</div><div class="he">מסלול סחר קבוע בין שני נמלים</div></div>
+  <div class="ph"><div class="en">Milestone</div><div class="he">אבן דרך. שלב מתוארך בציר הזמן של המשלוח</div></div>
+  <div class="ph"><div class="en">ETD / ETA</div><div class="he">זמן יציאה משוער / זמן הגעה משוער</div></div>
+  <div class="ph"><div class="en">Port of loading / discharge</div><div class="he">נמל טעינה / נמל פריקה</div></div>
+  <div class="ph"><div class="en">BOL (Bill of Lading)</div><div class="he">שטר מטען. המסמך שנוסע עם הסחורה</div></div>
+  <div class="ph"><div class="en">Demurrage</div><div class="he">קנס על מכולה שנשארת בנמל יותר מדי זמן</div></div>
+  <div class="ph"><div class="en">Roll / rolled</div><div class="he">משלוח שנדחה לאונייה הבאה. מקור עיקרי לכאב ראש</div></div>
+</section>
+
+<!-- ===== BEN: JOURNAL ===== -->
+<section id="t_log">
+  <h2>יומן</h2>
+  <p class="note">שתי דקות בסוף כל בוקר. בעוד שנה זה יהיה הדבר היחיד שיישאר מהטיול הזה.</p>
+  <div class="qlab">מה יגאל עשה היום? יבש, בלי פרשנות</div><textarea id="b1"></textarea>
+  <div class="qlab">מה עצבן אותו, או לקח לו יותר מדי זמן?</div><textarea id="b2"></textarea>
+  <div class="qlab">מילה או מונח חדש שלא הכרתי</div><textarea id="b3"></textarea>
+  <div class="qlab">רעיון אחד שאני לוקח לעסק שלי</div><textarea id="b4"></textarea>
+  <div class="qlab">הכי כיף היום</div><textarea id="b5"></textarea>
+  <button class="act" id="saveBen">שמור רשומה</button><span class="saved" id="savedBen"></span>
+  <div id="benEntries"></div>
+</section>
+
+<!-- ===== SHARED: SOS ===== -->
+<section id="t_sos">
+  <div class="sos">
+    <div class="n">911</div>
+    <p>משטרה, אמבולנס, מכבי אש. חינם מכל טלפון, גם בלי סים. תגיד <span dir="ltr">"I need help, I'm at..."</span> ותמסור כתובת.</p>
+  </div>
+
+  <h2>איפה אנחנו גרים</h2>
+  <p dir="ltr" style="text-align:left;font-family:'Rubik';font-weight:700">117 S Doheny Drive, Los Angeles, CA 90048</p>
+  <p>יגאל גר 200 מטר משם, ב-<span dir="ltr">411 N Oakhurst Drive, Beverly Hills, CA 90210</span>. שלוש דקות הליכה.</p>
+
+  <div class="blk fields">
+    <h2>מספרים למלא לפני הטיסה</h2>
+    <label>הטלפון של אבא</label><input type="text" id="f1">
+    <label>הטלפון של יגאל</label><input type="text" id="f2">
+    <label>טלפון נוסף במשפחה</label><input type="text" id="f3">
+    <label>ביטוח נסיעות: מספר פוליסה וטלפון חירום</label><input type="text" id="f4">
+    <label>מספר הדרכון שלי</label><input type="text" id="f5">
+    <label>חברת השכרת הרכב וטלפון</label><input type="text" id="f6">
+    <button class="act" id="saveF">שמור</button><span class="saved" id="savedF"></span>
+  </div>
+
+  <div class="blk">
+    <h2>כסף</h2>
+    <ul class="dot">
+      <li>המחיר על המדף <b>לא</b> כולל מס. בלוס אנג'לס מוסיפים בערך 9.5% בקופה.</li>
+      <li>טיפ במסעדה עם מלצר: 18% עד 20%. זה לא בונוס, זו המשכורת שלו.</li>
+      <li>בבית קפה או משלוח: 10% עד 15%, או דולר-שניים.</li>
+      <li>במונית או אובר: בערך 15%.</li>
+      <li>כמעט הכול נסגר בכרטיס או בטלפון. להחזיק 40 דולר מזומן בכל זאת.</li>
+    </ul>
+  </div>
+
+  <div class="blk">
+    <h2>דברים שכדאי לדעת</h2>
+    <ul class="dot">
+      <li>המרחקים ענקיים. מה שנראה קרוב במפה הוא 25 דקות ברכב.</li>
+      <li>אף פעם לא משאירים תיק, מחשב או טלפון בתוך הרכב, גם לא לרגע, גם לא מכוסה.</li>
+      <li>סוף ספטמבר בלוס אנג'לס: 30 מעלות ומעלה באזורים פנימיים. כובע, קרם הגנה, בקבוק מים.</li>
+      <li>השמש שוקעת בערך ב-18:45. חושך מגיע מהר.</li>
+      <li>אם מתנתקים: לעצור במקום, לא להתחיל לחפש. להיכנס לחנות ולבקש טלפון.</li>
+      <li>הפרשי השעות: 10 שעות מאחורי ישראל. בימים הראשונים מתעוררים ב-4 לפנות בוקר וגמורים ב-20:00. זה נורמלי ועובר תוך ארבעה ימים.</li>
+    </ul>
+  </div>
+</section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- storage ---------- */
+  var mem = {};
+  var store = {
+    get: async function(k){
+      try{ if(window.storage&&window.storage.get){var r=await window.storage.get(k,false);return r?r.value:null;} return window.localStorage.getItem(k); }
+      catch(e){ return (k in mem)?mem[k]:null; }
+    },
+    set: async function(k,v){
+      try{ if(window.storage&&window.storage.set){await window.storage.set(k,v,false);return true;} window.localStorage.setItem(k,v); return true; }
+      catch(e){ mem[k]=v; return false; }
+    },
+    del: async function(k){
+      try{ if(window.storage&&window.storage.delete){await window.storage.delete(k,false);return;} window.localStorage.removeItem(k); }
+      catch(e){ delete mem[k]; }
+    }
+  };
+  var USER = null;
+  function key(k){ return 'trip:'+USER+':'+k; }
+
+  /* ---------- data ---------- */
+  var DAYS = [
+    {d:'2026-09-23', t:'טסים', am:'06:00 המראה מנתב״ג. עצירה של שעה ועשר בווינה.', pm:'נוחתים ב-LAX ב-13:05, רכב, סופר, שלום ליגאל', n:'אסור לישון אחרי הצהריים. להחזיק מעמד עד 20:00.'},
+    {d:'2026-09-24', t:'סשן 1 · רק לצפות', am:'07:00 אצל יגאל. Tidelane לא נפתחת.', pm:'מוזיאון הרכב של פטרסן', n:'בלי שאלות היום. רק עיניים.'},
+    {d:'2026-09-25', t:'סשן 2 · המסך מול המציאות', am:'07:00 אצל יגאל', pm:'בורות הזפת של לה בריאה ומוזיאון LACMA', n:'ערב חג ראשון של סוכות'},
+    {d:'2026-09-26', t:'סשן 3 · צדדים והרשאות', am:'07:00 אצל יגאל', pm:'מזח סנטה מוניקה וחוף וניס', n:''},
+    {d:'2026-09-27', t:'סשן 4 · חריגים', am:'07:00 אצל יגאל', pm:'מוזיאון גטי, או חוף זומה אם חם', n:'הבוקר הכי חשוב בשבוע. כל "חוץ מ" נרשם.'},
+    {d:'2026-09-28', t:'סשן 5 · נתונים אמיתיים', am:'07:00 אצל יגאל', pm:'מרכז המדע של קליפורניה, מעבורת אנדוור', n:'כרטיסים מראש'},
+    {d:'2026-09-29', t:'סשן 6 · QuickBooks חי', am:'07:00 אצל יגאל', pm:'מלרוז, ואז מצפה גריפית בשקיעה', n:''},
+    {d:'2026-09-30', t:'סשן 7 · מסירה', am:'07:00 אצל יגאל. הבוקר שהכול מתנקז אליו.', pm:'כביש החוף למאליבו', n:'אם הבוקר לא הצליח, מבטלים את אחר הצהריים ומתקנים.'},
+    {d:'2026-10-01', t:'יום חופשי מלא', am:'יוניברסל סטודיוס', pm:'יוניברסל סטודיוס', n:'לצאת מהפארק לפני שיורד הלילה'},
+    {d:'2026-10-02', t:'רזרבה · אבטחה + המשימה של בן', am:'07:00 תיקונים, חשבונות דמו, מפתח הצפנה', pm:'סנטה מוניקה ווניס: שלושה עסקים, באנגלית', n:''},
+    {d:'2026-10-03', t:'רזרבה · סגירה והעברת בעלות', am:'נהלים, Cloudflare, D1, Intuit על שמו', pm:'הוליווד בולוורד, או רניון קניון', n:'היום האחרון שאפשר לתקן בו משהו'},
+    {d:'2026-10-04', t:'יום חופשי מלא', am:'סיקס פלאגס מג׳יק מאונטן', pm:'סיקס פלאגס מג׳יק מאונטן', n:'בערב ארוחה אחרונה עם יגאל'},
+    {d:'2026-10-05', t:'טסים הביתה', am:'אורזים, מחזירים רכב, בשדה ב-12:00', pm:'המראה 15:05, עצירה בפרנקפורט', n:'נוחתים בתל אביב ג׳ 6.10 ב-19:15'}
+  ];
+
+  var LISTS = {
+    dod: ['ליגאל חשבון admin משלו עם סיסמה משלו, ושבעת חשבונות הדמו נמחקו',
+          'לפחות חמישה משלוחים אמיתיים במסד עם הצדדים האמיתיים שלהם',
+          'QuickBooks מחובר חי לחברה האמיתית, ומשיכה אחת מתאימה למשלוח אמיתי',
+          'הוא ביצע הזמנה אחת ואישור מסמך אחד לבד, בזמן שאני צופה',
+          'רשם חריגים כתוב, כל שורה מסומנת: טופל, מחוץ לגבולות, או פתוח',
+          'דף נהלים אחד: הוספת משתמש, כשל בדיפלוי, מיגרציות לפני push, ומה קורה כשמסובבים את מפתח ההצפנה'],
+    sec: ['סיסמת הדמו המשותפת ושבעת חשבונות ה-demo הוסרו',
+          'דף המדריך שנקרא לפני התחברות רוקן או נסגר',
+          'מפתח הצפנה ראשי נוצר, נשמר לא רק במחשב שלי, ומוכר לעוד אדם אחד',
+          'חשבון Cloudflare, הוורקר, מסד D1 ואפליקציית Intuit עברו לשמו',
+          'שגרת ייצוא של מסד הנתונים. היום אין שום גיבוי',
+          'דומיין משלו במקום סאב-דומיין של workers.dev'],
+    ask: ['עשרה משלוחים אמיתיים שלו, מתחילתם ועד סופם, בכל צורה שהם קיימים',
+          'רשימת חברות הספנות, השולחים, הנמענים והמשלחים, ואילו מסלולים הוא באמת מריץ',
+          'גישת אדמין ל-QuickBooks Online שלו, ומי יכול לפתוח אפליקציה ב-developer.intuit.com',
+          'שמות כל מי שיגע במערכת, ומה כל אחד אמור ולא אמור לראות',
+          'אישור להקליט אודיו בסשנים',
+          'שם של אדם אחד נוסף שיכול להריץ את התהליך אם הוא נעדר שבוע'],
+    pre_effi: ['בחירת מושבים בכל ארבע הרגליים. כרגע לא נבחר כלום',
+               'ESTA לשני הדרכונים, עד 19.9 לכל המאוחר',
+               'שני הדרכונים בתוקף לפחות עד 6 באפריל 2027',
+               'מכתב ההסכמה של אמא חתום ונוטריוני, בתיק היד',
+               'ביטוח נסיעות לשנינו, מספר פוליסה וקו חירום שמורים אופליין',
+               'רישיון נהיגה בינלאומי כגיבוי לרישיון הישראלי',
+               'רכב מוזמן מ-23.9 אחר הצהריים עד 5.10 בבוקר',
+               'לברר עם יגאל אם יש חניה בדירה בדוהני. חניית רחוב שם מוגבלת בתווים',
+               'גישה למערכות של יגאל עובדת לפני העלייה למטוס',
+               'מפתח הצפנה ראשי נוצר ונשמר לא רק במחשב',
+               'eSIM או חבילת גלישה לשני המכשירים',
+               'לסגור עם יגאל מי נושא ב-4,427 הדולר ששולמו, ומה עוד "מארח" כולל',
+               'כל הסידורים סגורים עד שבת 19.9. המדינה נעצרת ב-20 עד 21.9'],
+    pre_ben: null
+  };
+
+  var BEN_CHECK = [
+    ['מסמכים', ['דרכון בתוקף לפחות עד אפריל 2027','אישור ESTA מאושר ומודפס. חייב להיות מוכן עד 19.9','מכתב הסכמה חתום של אמא, בתיק היד ולא במזוודה','צילום של הדרכון נשמר בלשונית "מסמכים"','פרטי ביטוח נסיעות שמורים בטלפון גם בלי אינטרנט']],
+    ['טכנולוגיה', ['מחשב נייד ומטען','מתאם לשקע אמריקאי','סוללה ניידת לימים הארוכים','eSIM או חבילת גלישה מוכנה','הורדת מפות לוס אנג׳לס במצב לא מקוון','אוזניות. הטיסה לוס אנג׳לס היא 11 שעות רצוף']],
+    ['לעבודה אצל יגאל', ['להיכנס ל-Tidelane עם חשבון הצפייה ולהסתובב בכל המסכים','לקרוא את רשימת מונחי המכולות בלשונית "אנגלית"','מחברת נייר ושני עטים. לא מחשב.','שעון או משהו שמראה שעה בלי לפתוח טלפון','קריאה של שבעת הכללים בלשונית "העבודה"','בגדים שמתאימים לשבת בבית של מבוגר']],
+    ['לעסק שלך', ['תרגול הפתיחה באנגלית בקול רם, עשר פעמים','דוגמאות של שניים או שלושה אתרים שבנית, זמינות בטלפון','כרטיס ביקור פשוט: שם, מייל, לינק','רשימה של חמישה עסקים בסנטה מוניקה שאתה רוצה לנסות']],
+    ['בגדים וציוד', ['כובע וקרם הגנה 50','משקפי שמש','סווטשירט אחד לערבים ולמטוסים','בגד ים ומגבת','נעלי הליכה נוחות. תלך המון.','בקבוק מים רב פעמי']]
+  ];
+
+  var TABS = {
+    effi: [['t_today','היום'],['t_work_effi','העבודה'],['t_yigal','יגאל'],['t_pre_effi','לפני'],['t_flights','טיסות'],['t_docs','מסמכים'],['t_sos','חירום']],
+    ben:  [['t_today','היום'],['t_pre_ben','לפני'],['t_work_ben','העבודה'],['t_mission','המשימה'],['t_eng','אנגלית'],['t_log','יומן'],['t_flights','טיסות'],['t_docs','מסמכים'],['t_sos','חירום']]
+  };
+
+  /* ---------- date helpers ---------- */
+  function today(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+  function pretty(iso){var wd=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];var p=iso.split('-');var dt=new Date(+p[0],+p[1]-1,+p[2]);return 'יום '+wd[dt.getDay()]+', '+(+p[2])+'.'+(+p[1]);}
+  function between(a,b){var pa=a.split('-'),pb=b.split('-');return Math.round((Date.UTC(+pb[0],+pb[1]-1,+pb[2])-Date.UTC(+pa[0],+pa[1]-1,+pa[2]))/86400000);}
+
+  /* ---------- checklists ---------- */
+  function buildFlat(containerId, progId, items, storeKey){
+    var el=document.getElementById(containerId);
+    el.innerHTML = items.map(function(t,i){
+      return '<label class="ck"><input type="checkbox" data-id="i'+i+'"><span class="box">✓</span><span class="tx">'+t+'</span></label>';
+    }).join('');
+    wireChecks(el, document.getElementById(progId), storeKey);
+  }
+  function buildGrouped(containerId, progId, groups, storeKey){
+    var el=document.getElementById(containerId), h='', idx=0;
+    groups.forEach(function(g){
+      h+='<div class="grp">'+g[0]+'</div>';
+      g[1].forEach(function(t){ h+='<label class="ck"><input type="checkbox" data-id="i'+(idx++)+'"><span class="box">✓</span><span class="tx">'+t+'</span></label>'; });
+    });
+    el.innerHTML=h;
+    wireChecks(el, document.getElementById(progId), storeKey);
+  }
+  function wireChecks(el, bar, storeKey){
+    function upd(){ var all=el.querySelectorAll('input'), done=el.querySelectorAll('input:checked').length;
+      if(bar) bar.style.width=(all.length?Math.round(done/all.length*100):0)+'%'; }
+    (async function(){
+      var raw=await store.get(key(storeKey)), saved={};
+      if(raw){ try{saved=JSON.parse(raw);}catch(e){} }
+      el.querySelectorAll('input').forEach(function(i){ if(saved[i.dataset.id]) i.checked=true; });
+      upd();
+    })();
+    el.addEventListener('change',function(){
+      var o={}; el.querySelectorAll('input').forEach(function(i){ if(i.checked) o[i.dataset.id]=1; });
+      store.set(key(storeKey), JSON.stringify(o)); upd();
+    });
+  }
+
+  /* ---------- journals ---------- */
+  function wireJournal(ids, labels, btnId, msgId, listId, storeKey, emptyMsg){
+    var entries=[], listEl=document.getElementById(listId);
+    function render(){
+      if(!entries.length){ listEl.innerHTML='<div class="entry"><div class="dt">אין עדיין רשומות</div><p class="note">'+emptyMsg+'</p></div>'; return; }
+      listEl.innerHTML=entries.slice().reverse().map(function(e){
+        var body=ids.map(function(q,i){ return e[q]?'<p><b>'+labels[i]+':</b> '+String(e[q]).replace(/</g,'&lt;')+'</p>':''; }).join('');
+        return '<div class="entry"><div class="dt">'+pretty(e.date)+'</div>'+body+'</div>';
+      }).join('');
+    }
+    (async function(){ var raw=await store.get(key(storeKey)); if(raw){ try{entries=JSON.parse(raw)||[];}catch(e){} } render(); })();
+    document.getElementById(btnId).addEventListener('click', async function(){
+      var e={date:today()}, any=false;
+      ids.forEach(function(q){ var v=document.getElementById(q).value.trim(); e[q]=v; if(v) any=true; });
+      var msg=document.getElementById(msgId);
+      if(!any){ msg.textContent='הכול ריק. תכתוב לפחות שורה אחת.'; return; }
+      entries.push(e); await store.set(key(storeKey), JSON.stringify(entries));
+      ids.forEach(function(q){ document.getElementById(q).value=''; });
+      msg.textContent='נשמר'; setTimeout(function(){msg.textContent='';},2500); render();
+    });
+  }
+
+  /* ---------- documents ---------- */
+  var MAXB = 3.5*1024*1024;
+  function shrinkImage(file){
+    return new Promise(function(res,rej){
+      var fr=new FileReader();
+      fr.onload=function(){
+        var img=new Image();
+        img.onload=function(){
+          var max=1500, w=img.width, h=img.height;
+          if(w>max||h>max){ var s=max/Math.max(w,h); w=Math.round(w*s); h=Math.round(h*s); }
+          var c=document.createElement('canvas'); c.width=w; c.height=h;
+          c.getContext('2d').drawImage(img,0,0,w,h);
+          res(c.toDataURL('image/jpeg',0.72));
+        };
+        img.onerror=function(){ rej(new Error('לא הצלחתי לקרוא את התמונה')); };
+        img.src=fr.result;
+      };
+      fr.onerror=function(){ rej(new Error('קריאת הקובץ נכשלה')); };
+      fr.readAsDataURL(file);
+    });
+  }
+  function readRaw(file){
+    return new Promise(function(res,rej){
+      var fr=new FileReader();
+      fr.onload=function(){res(fr.result);}; fr.onerror=function(){rej(new Error('קריאת הקובץ נכשלה'));};
+      fr.readAsDataURL(file);
+    });
+  }
+  var docIndex=[];
+  async function loadDocs(){
+    var raw=await store.get(key('docs:index'));
+    docIndex = raw ? (function(){try{return JSON.parse(raw)||[];}catch(e){return [];}})() : [];
+    renderDocs();
+  }
+  async function renderDocs(){
+    var el=document.getElementById('docList');
+    if(!docIndex.length){ el.innerHTML='<div class="entry"><div class="dt">אין עדיין מסמכים</div><p class="note">הכי חשוב: דרכון ואישור ESTA. אם הדרכון הולך לאיבוד, צילום שלו חוסך ימים בקונסוליה.</p></div>'; return; }
+    el.innerHTML = docIndex.map(function(d){
+      return '<div class="doc" data-id="'+d.id+'">'+
+        '<div class="thumb" data-thumb="'+d.id+'">'+(d.type==='pdf'?'PDF':'…')+'</div>'+
+        '<div class="meta"><b>'+d.label+'</b><span>'+d.name+' · '+Math.round(d.size/1024)+' KB · נוסף '+pretty(d.added)+'</span></div>'+
+        '<div class="acts"><button class="open" data-id="'+d.id+'">פתח</button><button class="del" data-id="'+d.id+'">מחק</button></div></div>';
+    }).join('');
+    for(var i=0;i<docIndex.length;i++){
+      var d=docIndex[i];
+      if(d.type==='img'){
+        var data=await store.get(key('doc:'+d.id));
+        var t=el.querySelector('[data-thumb="'+d.id+'"]');
+        if(data&&t) t.innerHTML='<img alt="" src="'+data+'">';
+      }
+    }
+  }
+  document.getElementById('docFile').addEventListener('change', async function(ev){
+    var file=ev.target.files&&ev.target.files[0]; if(!file) return;
+    var status=document.getElementById('docStatus');
+    status.textContent='מעבד...';
+    try{
+      var isPdf = file.type==='application/pdf';
+      if(isPdf && file.size>MAXB){ status.textContent='הקובץ גדול מדי (מעל 3.5 מגה). נסה לצלם את הדף במקום.'; ev.target.value=''; return; }
+      var data = isPdf ? await readRaw(file) : await shrinkImage(file);
+      if(data.length>MAXB){ status.textContent='הקובץ עדיין גדול מדי אחרי הקטנה.'; ev.target.value=''; return; }
+      var id='d'+Date.now();
+      var ok=await store.set(key('doc:'+id), data);
+      docIndex.push({id:id,label:document.getElementById('docLabel').value,name:file.name,type:isPdf?'pdf':'img',size:data.length,added:today()});
+      await store.set(key('docs:index'), JSON.stringify(docIndex));
+      status.textContent = ok ? 'נשמר.' : 'נשמר לסשן הזה בלבד; אין מקום קבוע בדפדפן.';
+      renderDocs();
+    }catch(err){ status.textContent = err.message||'משהו נכשל'; }
+    ev.target.value='';
+    setTimeout(function(){ status.textContent=''; }, 4000);
+  });
+  document.getElementById('docList').addEventListener('click', async function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    var id=b.dataset.id;
+    if(b.classList.contains('open')){
+      var data=await store.get(key('doc:'+id));
+      if(!data){ alert('הקובץ לא נמצא'); return; }
+      var w=window.open(); if(w) w.document.write('<body style="margin:0;background:#111"><iframe src="'+data+'" style="border:0;width:100vw;height:100vh"></iframe></body>');
+    } else {
+      if(!confirm('למחוק את המסמך?')) return;
+      await store.del(key('doc:'+id));
+      docIndex=docIndex.filter(function(d){return d.id!==id;});
+      await store.set(key('docs:index'), JSON.stringify(docIndex));
+      renderDocs();
+    }
+  });
+
+  /* ---------- emergency fields ---------- */
+  var FS=['f1','f2','f3','f4','f5','f6'];
+  async function loadFields(){
+    FS.forEach(function(f){ document.getElementById(f).value=''; });
+    var raw=await store.get(key('fields'));
+    if(raw){ try{ var o=JSON.parse(raw); FS.forEach(function(f){ if(o[f]) document.getElementById(f).value=o[f]; }); }catch(e){} }
+  }
+  document.getElementById('saveF').addEventListener('click', async function(){
+    var o={}; FS.forEach(function(f){ o[f]=document.getElementById(f).value; });
+    await store.set(key('fields'), JSON.stringify(o));
+    var m=document.getElementById('savedF'); m.textContent='נשמר'; setTimeout(function(){m.textContent='';},2500);
+  });
+
+  /* ---------- today + all days ---------- */
+  function renderToday(){
+    var t=today(), toGo=between(t, DAYS[0].d), last=DAYS[DAYS.length-1].d;
+    var cnt=document.getElementById('counter');
+    if(toGo>0) cnt.innerHTML='<span class="n">'+toGo+'</span><span class="lbl">ימים עד הטיסה</span>';
+    else if(between(t,last)>=0) cnt.innerHTML='<span class="n">'+(1-toGo)+'</span><span class="lbl">היום ביומן הטיול</span>';
+    else cnt.innerHTML='<span class="n">·</span><span class="lbl">הטיול הסתיים</span>';
+
+    var rec=DAYS.filter(function(d){return d.d===t;})[0], card=document.getElementById('todayCard');
+    if(rec){
+      card.innerHTML='<div class="today"><div class="d">'+pretty(rec.d)+'</div><h2>'+rec.t+'</h2>'+
+        '<div class="row"><b>בוקר</b><span>'+rec.am+'</span></div>'+
+        '<div class="row"><b>אחה״צ</b><span>'+rec.pm+'</span></div>'+
+        (rec.n?'<div class="row"><b>שים לב</b><span>'+rec.n+'</span></div>':'')+'</div>';
+    } else {
+      var msg = toGo>0 ? (USER==='effi'?'לשונית "לפני" ולשונית "יגאל" הן מה שצריך עכשיו.':'לשונית "לפני" היא כל מה שצריך כרגע. תסמן מה שכבר מוכן.') : 'תפתח את היומן ותקרא מה כתבת.';
+      card.innerHTML='<div class="today"><div class="d">'+(toGo>0?'עדיין לא בדרך':'חזרנו')+'</div><h2>'+(toGo>0?'נשארו '+toGo+' ימים':'הטיול הסתיים')+'</h2>'+
+        '<div class="row"><b>עכשיו</b><span>'+msg+'</span></div></div>';
+    }
+    document.getElementById('allDays').innerHTML='<tr><th>יום</th><th>מה קורה</th></tr>'+DAYS.map(function(d){
+      return '<tr><td class="day">'+pretty(d.d)+'</td><td><b>'+d.t+'</b><br><span class="note">'+d.pm+'</span></td></tr>';
+    }).join('');
+  }
+
+  /* ---------- tabs ---------- */
+  function buildTabs(){
+    var nav=document.getElementById('tabs');
+    nav.innerHTML=TABS[USER].map(function(t,i){ return '<button data-t="'+t[0]+'"'+(i===0?' class="on"':'')+'>'+t[1]+'</button>'; }).join('');
+    show(TABS[USER][0][0]);
+  }
+  function show(id){
+    document.querySelectorAll('section').forEach(function(s){ s.classList.remove('on'); });
+    var el=document.getElementById(id); if(el) el.classList.add('on');
+    document.querySelectorAll('#tabs button').forEach(function(b){ b.classList.toggle('on', b.dataset.t===id); });
+    window.scrollTo(0,0);
+  }
+  document.getElementById('tabs').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(b) show(b.dataset.t);
+  });
+
+  /* ---------- user ---------- */
+  async function setUser(u){
+    USER=u;
+    document.getElementById('hdrTitle').textContent = (u==='effi'?'אפי':'בן')+' · לוס אנג\'לס';
+    buildTabs();
+    renderToday();
+    await loadFields();
+    await loadDocs();
+    if(u==='effi'){
+      buildFlat('ck_dod','prog_dod',LISTS.dod,'ck:dod');
+      buildFlat('ck_sec','prog_sec',LISTS.sec,'ck:sec');
+      buildFlat('ck_ask','prog_ask',LISTS.ask,'ck:ask');
+      buildFlat('ck_pre_effi','prog_pre_effi',LISTS.pre_effi,'ck:pre');
+    } else {
+      buildGrouped('ck_pre_ben','prog_pre_ben',BEN_CHECK,'ck:pre');
+    }
+  }
+  document.getElementById('whoBtn').addEventListener('click',async function(){
+    try{ await fetch('/api/logout',{method:'POST'}); }catch(e){}
+    window.location.replace('/');
+  });
+
+  /* wire journals once */
+  wireJournal(['s1','s2','s3','s4','s5','s6','s7'],
+    ['מה ראיתי','שדות במודל','חריגים','החלטות','רשימת המתנה','אבטחה ובעלות','ביטחון'],
+    'saveSession','savedSession','sessionEntries','journal:session',
+    'הרשומה הראשונה נכתבת ב-24.9, מיד בסוף הסשן הראשון.');
+  wireJournal(['b1','b2','b3','b4','b5'],
+    ['מה יגאל עשה','מה עצבן אותו','מונח חדש','רעיון לעסק שלי','הכי כיף'],
+    'saveBen','savedBen','benEntries','journal:ben',
+    'הרשומה הראשונה נכתבת ב-24.9, מיד בסוף הסשן הראשון.');
+
+  /* boot */
+  (async function(){
+    var u = window.__TRIP_USER__;
+    if(u==='effi'||u==='ben') setUser(u);
+  })();
+
+})();
+</script>
+</body>
+</html>

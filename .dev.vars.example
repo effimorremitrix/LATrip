@@ -1,0 +1,5 @@
+# Copy to .dev.vars for local `npm run dev`. Never committed, never deployed.
+# Production values live in Cloudflare secrets, set by `npm run setup`.
+AUTH_SECRET=any-random-string-for-local-dev
+PASSWORD_EFFI=choose-one
+PASSWORD_BEN=choose-one

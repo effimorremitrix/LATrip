@@ -1,0 +1,16 @@
+name = "latrip"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+# The app and login pages are plain HTML, imported into the Worker as text.
+rules = [
+  { type = "Text", globs = ["**/*.html"], fallthrough = false }
+]
+
+# Secrets are NOT set here. They live in Cloudflare, set once with:
+#   npm run setup
+# or individually with:
+#   npx wrangler secret put AUTH_SECRET
+#   npx wrangler secret put PASSWORD_EFFI
+#   npx wrangler secret put PASSWORD_BEN
