@@ -98,9 +98,29 @@ wrangler.toml    Worker config; both HTML files are imported as text modules
 The app's own tab sets are keyed on `effi` / `ben` in `src/app.html`, so a new
 person also needs their own entry in `TABS` and `LISTS` there.
 
+## Observability
+
+Workers Logs and Traces are on in `wrangler.toml`. Every rejected login emits a
+structured line you can query in the dashboard or tail live:
+
+```bash
+npm run tail
+```
+
+```json
+{ "event": "login_rejected", "user": "effi", "ip": "203.0.113.7" }
+```
+
+Only a username the Worker recognises is logged; anything else is recorded as
+`"unknown"`, so an attacker cannot write arbitrary text into your logs. The
+password is never logged. Repeated `login_rejected` lines from one IP are what
+guessing looks like.
+
 ## Known limitation
 
 There is no rate limit on `/api/login`. A wrong password costs the attacker a
 forced 400 ms delay and nothing else, so the passwords need to be strong enough
-to survive patient guessing on their own. If that ever feels thin, Cloudflare's
-Rate Limiting binding drops into `wrangler.toml` without touching the auth code.
+to survive patient guessing on their own. The logging above makes an attempt
+visible after the fact; it does not stop one. If that ever feels thin,
+Cloudflare's Rate Limiting binding drops into `wrangler.toml` without touching
+the auth code.

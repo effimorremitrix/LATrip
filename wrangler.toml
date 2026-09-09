@@ -1,12 +1,25 @@
 name = "latrip"
 main = "src/index.js"
-compatibility_date = "2026-09-01"
+compatibility_date = "2026-09-09"
 workers_dev = true
 
 # The app and login pages are plain HTML, imported into the Worker as text.
 rules = [
   { type = "Text", globs = ["**/*.html"], fallthrough = false }
 ]
+
+# Logs and traces. Without these, a failed login or a 5xx leaves no record.
+# `enabled` alone does not turn on traces, so traces is set explicitly.
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 0.01
 
 # Secrets are NOT set here. They live in Cloudflare, set once with:
 #   npm run setup

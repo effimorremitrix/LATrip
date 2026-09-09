@@ -20,6 +20,7 @@ import LOGIN_HTML from "./login.html";
 
 const COOKIE_NAME = "trip_session";
 const SESSION_SECONDS = 60 * 60 * 24 * 30; // 30 days
+const MAX_LOGIN_BODY = 4096; // bytes; a login body is ~60
 
 /* user id -> name of the secret holding that user's password */
 const USERS = {
@@ -68,16 +69,49 @@ async function hmac(secret, message) {
 }
 
 /**
- * Compare two strings without leaking their contents or length through timing.
- * Both sides are hashed with a per-call random key first, so the byte compare
- * always runs over two equal-length digests.
+ * Compare two strings in constant time. Both sides are hashed to a fixed
+ * 32 bytes first, so nothing about their length leaks, and the comparison
+ * itself runs in the runtime rather than in JS where a JIT could short-circuit.
  */
 async function safeEqual(a, b) {
-  const salt = b64url(crypto.getRandomValues(new Uint8Array(32)));
-  const [ha, hb] = await Promise.all([hmac(salt, a), hmac(salt, b)]);
-  let diff = 0;
-  for (let i = 0; i < ha.length; i++) diff |= ha.charCodeAt(i) ^ hb.charCodeAt(i);
-  return diff === 0;
+  const [ha, hb] = await Promise.all([
+    crypto.subtle.digest("SHA-256", enc.encode(a)),
+    crypto.subtle.digest("SHA-256", enc.encode(b)),
+  ]);
+  return crypto.subtle.timingSafeEqual(ha, hb);
+}
+
+/**
+ * Read a request body with a hard byte ceiling, so an unauthenticated caller
+ * cannot make the Worker buffer an arbitrarily large payload. Returns null if
+ * the body is larger than maxBytes.
+ */
+async function readBounded(request, maxBytes) {
+  const declared = request.headers.get("Content-Length");
+  if (declared !== null && Number(declared) > maxBytes) return null;
+  if (!request.body) return "";
+
+  const reader = request.body.getReader();
+  const chunks = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+
+  const joined = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    joined.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(joined);
 }
 
 function readCookie(request, name) {
@@ -157,9 +191,12 @@ function json(body, status = 200, extraHeaders = {}) {
 /* ---------- handlers ---------- */
 
 async function handleLogin(request, env) {
+  const raw = await readBounded(request, MAX_LOGIN_BODY);
+  if (raw === null) return json({ ok: false, error: "payload_too_large" }, 413);
+
   let body;
   try {
-    body = await request.json();
+    body = JSON.parse(raw);
   } catch {
     return json({ ok: false, error: "bad_request" }, 400);
   }
@@ -174,6 +211,15 @@ async function handleLogin(request, env) {
   const ok = (await safeEqual(expected, password)) && expected !== "";
 
   if (!ok) {
+    /* Only ever log a username we recognise, never attacker-supplied text,
+       and never the password. This is what makes guessing visible in logs. */
+    console.log(
+      JSON.stringify({
+        event: "login_rejected",
+        user: secretName ? user : "unknown",
+        ip: request.headers.get("CF-Connecting-IP") || null,
+      })
+    );
     await new Promise((r) => setTimeout(r, 400));
     return json({ ok: false, error: "invalid_credentials" }, 401);
   }
@@ -188,41 +234,55 @@ function handleLogout() {
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url);
-
-    if (url.pathname === "/healthz") {
-      return new Response("ok", { headers: { "Cache-Control": "no-store" } });
-    }
-
-    if (!env.AUTH_SECRET || !env.PASSWORD_EFFI || !env.PASSWORD_BEN) {
-      return json(
-        { ok: false, error: "not_configured", detail: "Missing AUTH_SECRET / PASSWORD_EFFI / PASSWORD_BEN" },
-        503
+    try {
+      return await route(request, env);
+    } catch (e) {
+      console.error(
+        JSON.stringify({
+          event: "unhandled_error",
+          error: e instanceof Error ? e.message : String(e),
+        })
       );
+      return json({ ok: false, error: "internal_error" }, 500);
     }
-
-    if (url.pathname === "/api/login") {
-      if (request.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
-      return handleLogin(request, env);
-    }
-
-    if (url.pathname === "/api/logout") {
-      if (request.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
-      return handleLogout();
-    }
-
-    if (request.method !== "GET" && request.method !== "HEAD") {
-      return json({ ok: false, error: "method_not_allowed" }, 405);
-    }
-
-    const user = await readSession(request, env.AUTH_SECRET);
-    if (!user) {
-      /* Clear a cookie that is expired or no longer verifies, so the browser
-         stops sending it on every request. */
-      const stale = readCookie(request, COOKIE_NAME);
-      return html(LOGIN_HTML, 200, stale ? { "Set-Cookie": sessionCookie("", 0) } : {});
-    }
-
-    return html(APP_HTML.replace("%%TRIP_USER%%", user));
   },
 };
+
+async function route(request, env) {
+  const url = new URL(request.url);
+
+  if (url.pathname === "/healthz") {
+    return new Response("ok", { headers: { "Cache-Control": "no-store" } });
+  }
+
+  if (!env.AUTH_SECRET || !env.PASSWORD_EFFI || !env.PASSWORD_BEN) {
+    return json(
+      { ok: false, error: "not_configured", detail: "Missing AUTH_SECRET / PASSWORD_EFFI / PASSWORD_BEN" },
+      503
+    );
+  }
+
+  if (url.pathname === "/api/login") {
+    if (request.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
+    return handleLogin(request, env);
+  }
+
+  if (url.pathname === "/api/logout") {
+    if (request.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
+    return handleLogout();
+  }
+
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return json({ ok: false, error: "method_not_allowed" }, 405);
+  }
+
+  const user = await readSession(request, env.AUTH_SECRET);
+  if (!user) {
+    /* Clear a cookie that is expired or no longer verifies, so the browser
+       stops sending it on every request. */
+    const stale = readCookie(request, COOKIE_NAME);
+    return html(LOGIN_HTML, 200, stale ? { "Set-Cookie": sessionCookie("", 0) } : {});
+  }
+
+  return html(APP_HTML.replace("%%TRIP_USER%%", user));
+}
