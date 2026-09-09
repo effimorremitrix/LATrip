@@ -12,7 +12,7 @@ It is used on phones, in the field, often on bad hotel wifi and sometimes offlin
 
 ## Who uses it
 
-The app opens on a user picker and reshapes entirely around the choice. This is not cosmetic; the two people need different things.
+The app is served behind a per-user password gate. The Worker verifies the password and hands the page a verified identity, and the app reshapes entirely around it. This is not cosmetic; the two people need different things.
 
 **Effi** — running an unpaid consulting handover with a family friend named Yigal, who runs an ocean freight business in Los Angeles. His tabs: היום, העבודה (the Tidelane handover and Deckhand delivery), יגאל (commercial and relationship items), לפני, טיסות, מסמכים, חירום.
 
@@ -28,7 +28,8 @@ All state is scoped per user: `trip:<user>:<key>`. Switching users must never le
 4. **Storage is layered and must stay that way:** `window.storage` if present, then `localStorage`, then an in-memory object. Every call is wrapped so a storage failure degrades the feature rather than breaking the page.
 5. **Nothing in Ben's tabs may create an obligation or a deliverable for him.** He is 14 and he is there to learn. He is explicitly not accountable for any outcome of the work. Encouraging, never pressuring.
 6. **The dates and flight details below are facts.** Do not regenerate them from memory, do not "correct" them.
-7. Full technical SEO and WCAG 2.2 AA accessibility apply, plus a Build → Run → Audit → Fix → Re-test pass before delivery: Lighthouse 90 or above on SEO, Accessibility and Best Practices, and axe clean of critical and serious issues. See the `web-seo-accessibility` skill.
+7. **The Worker owns identity, never the browser.** The page receives its user from the Worker as `window.__TRIP_USER__` and has no say in it. Never reintroduce a client-side user picker and never let the page choose or change who it is; that hands anyone with the URL both accounts. See Auth and deploy below.
+8. Full technical SEO and WCAG 2.2 AA accessibility apply, plus a Build → Run → Audit → Fix → Re-test pass before delivery: Lighthouse 90 or above on SEO, Accessibility and Best Practices, and axe clean of critical and serious issues. See the `web-seo-accessibility` skill.
 
 ## Trip facts
 
@@ -55,6 +56,43 @@ Vienna connection is 1h 10m, legal with no slack. No seats were selected at book
 - Images are downscaled to a 1500px longest edge and re-encoded as JPEG at 0.72 quality before storage. A 4 MB phone photo becomes roughly 250 KB.
 - PDFs are stored as-is and refused above 3.5 MB, with a suggestion to photograph the page instead.
 - Under `localStorage` the whole origin has only a few megabytes. Passport and ESTA fit comfortably; twenty photos do not. Keep the compression aggressive and do not add bulk import.
+
+## Auth and deploy
+
+The app is not a static file. `src/index.js` is a Cloudflare Worker that owns
+identity; `src/app.html` and `src/login.html` are imported into it as text
+modules and served from it.
+
+| Route | Behaviour |
+|---|---|
+| `GET /` without a valid cookie | login page only; no trip content in the response |
+| `POST /api/login` | password checked against a Cloudflare secret, sets the session cookie |
+| `GET /` with a valid cookie | app, with the verified user substituted into `%%TRIP_USER%%` |
+| `POST /api/logout` | clears the cookie; this is the יציאה button in the header |
+
+The cookie is `user.expiry.HMAC-SHA256(user.expiry, AUTH_SECRET)`, HttpOnly,
+Secure, SameSite=Lax, thirty days. Editing any field breaks the signature, so a
+`ben` session cannot be rewritten into an `effi` one.
+
+Three secrets live in Cloudflare and never in git: `AUTH_SECRET`,
+`PASSWORD_EFFI`, `PASSWORD_BEN`. Set or rotate them with `npm run setup`.
+`wrangler secret put` is itself a deployment, so nothing needs redeploying
+after. If any secret is missing the Worker returns 503 `not_configured` and
+serves nothing. That is deliberate: an unconfigured deploy is locked, not open.
+
+After deploying, run `bash scripts/smoke-test.sh <url>`, which checks the auth
+boundary from outside.
+
+**On rule 3 and telemetry.** The vault is still client-side only, document
+bytes never reach the Worker, and the sentence at `src/app.html:161` telling
+the user their files stay on the device remains true. The Worker itself does
+emit Workers Logs and Traces, which record request metadata and a
+`login_rejected` line carrying the attempted username and the caller's IP. No
+document content and no passwords are logged. If zero server-side telemetry is
+wanted, remove `[observability]` from `wrangler.toml`; the cost is losing all
+visibility into password guessing.
+
+Deployment and rotation detail lives in README.md. Do not duplicate it here.
 
 ## Content that must stay accurate
 
