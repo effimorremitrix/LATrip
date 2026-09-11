@@ -54,16 +54,31 @@ function daysJson(days) {
    renders `gt` but is handed `t` has not hidden anything: the real title is still
    in the response body, one View Source away. So the working mornings are dropped
    from the payload rather than merely skipped at render time, along with `n`,
-   which is a note to ourselves. */
+   which is a note to ourselves.
+
+   `en` rides along because the guest page is the one page with a language toggle,
+   and it holds both languages at once so switching costs no round trip and works
+   offline. It is already the English of the GUEST day, so it hides what `gt`
+   hides; see the note in src/days.js. */
 const GUEST_DAYS = DAYS.map((d) => ({
   d: d.d,
   t: d.gt || d.t,
   am: d.gam || d.am,
   pm: d.gpm || d.pm,
+  en: d.en,
   pl: d.pl,
 }));
 
-const DAYS_JSON = daysJson(DAYS);
+/* The app is Hebrew and has no toggle, so the English never reaches it. This is
+   not about secrecy, it is about weight: the app payload is the one that gets
+   reopened all day on hotel wifi, and English it will never render is dead
+   bytes in it. */
+const APP_DAYS = DAYS.map(({ en, ...rest }) => ({
+  ...rest,
+  pl: (rest.pl || []).map(({ en: _placeEn, ...place }) => place),
+}));
+
+const DAYS_JSON = daysJson(APP_DAYS);
 const GUEST_DAYS_JSON = daysJson(GUEST_DAYS);
 
 const SECURITY_HEADERS = {
