@@ -61,6 +61,14 @@ Vienna connection is 1h 10m, legal with no slack. No seats were selected at book
 - Images are downscaled to a 1500px longest edge and re-encoded as JPEG at 0.72 quality before storage. A 4 MB phone photo becomes roughly 250 KB.
 - PDFs are stored as-is and refused above 3.5 MB, with a suggestion to photograph the page instead.
 - Under `localStorage` the whole origin has only a few megabytes. Passport and ESTA fit comfortably; twenty photos do not. Keep the compression aggressive and do not add bulk import.
+- **Opening a document never goes through an iframe.** The CSP has no `frame-src` and
+  falls back to `default-src 'self'`, and a window opened from the page inherits that
+  CSP, so an iframe pointing at a `data:` URL is refused and the user gets Chrome's
+  "This content is blocked". An image therefore renders in the in-page overlay
+  (`#docViewer`), which `img-src 'self' data:` already allows, and a PDF opens in its
+  own tab as a `blob:` URL so the phone's own PDF viewer handles it. Widening the CSP
+  to bring the iframe back is the wrong trade; the bytes still never leave the device
+  either way.
 
 ## Auth and deploy
 
