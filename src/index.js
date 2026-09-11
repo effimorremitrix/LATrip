@@ -13,10 +13,16 @@
  *   AUTH_SECRET     random string used to sign session cookies
  *   PASSWORD_EFFI   password for user "effi"
  *   PASSWORD_BEN    password for user "ben"
+ *   PASSWORD_GUEST  password for the shared read-only guest view; OPTIONAL.
+ *                   Unset means guest logins are refused and the other two
+ *                   accounts are untouched, so deploying this before the secret
+ *                   exists costs nothing.
  */
 
 import APP_HTML from "./app.html";
+import GUEST_HTML from "./guest.html";
 import LOGIN_HTML from "./login.html";
+import { DAYS } from "./days.js";
 
 const COOKIE_NAME = "trip_session";
 const SESSION_SECONDS = 60 * 60 * 24 * 30; // 30 days
@@ -26,7 +32,39 @@ const MAX_LOGIN_BODY = 4096; // bytes; a login body is ~60
 const USERS = {
   effi: "PASSWORD_EFFI",
   ben: "PASSWORD_BEN",
+  guest: "PASSWORD_GUEST",
 };
+
+/* Guests share one password, so they get their own template rather than the app
+   with tabs hidden: tab filtering happens in the browser, so an app.html served
+   to a guest would carry Effi's commercial notes and Ben's journal in the page
+   source, one View Source away from anyone holding the shared password. */
+const TEMPLATES = { guest: GUEST_HTML };
+
+/* The itinerary is substituted rather than inlined in each template, so a day is
+   edited in one place. JSON is a subset of JS here except for the characters
+   that could close the surrounding <script>, hence the escaping. */
+function daysJson(days) {
+  return JSON.stringify(days)
+    .replace(/</g, "\\u003c")
+    .replace(/\u2028|\u2029/g, (c) => (c === "\u2028" ? "\\u2028" : "\\u2029"));
+}
+
+/* The guest projection is built HERE, not in the guest page, because a page that
+   renders `gt` but is handed `t` has not hidden anything: the real title is still
+   in the response body, one View Source away. So the working mornings are dropped
+   from the payload rather than merely skipped at render time, along with `n`,
+   which is a note to ourselves. */
+const GUEST_DAYS = DAYS.map((d) => ({
+  d: d.d,
+  t: d.gt || d.t,
+  am: d.gam || d.am,
+  pm: d.gpm || d.pm,
+  pl: d.pl,
+}));
+
+const DAYS_JSON = daysJson(DAYS);
+const GUEST_DAYS_JSON = daysJson(GUEST_DAYS);
 
 const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
@@ -310,7 +348,10 @@ async function route(request, env) {
      shared caches and `no-cache` forces revalidation on every open, so the
      cookie is still checked every single time: a logged-out browser gets the
      login page, never a 304 onto cached trip content. */
-  const body = APP_HTML.replace("%%TRIP_USER%%", user);
+  const days = user === "guest" ? GUEST_DAYS_JSON : DAYS_JSON;
+  const body = (TEMPLATES[user] || APP_HTML)
+    .replace("%%TRIP_USER%%", user)
+    .replace("%%DAYS%%", () => days);
   const etag = await etagFor(body);
   const cacheHeaders = {
     ETag: etag,

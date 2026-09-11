@@ -44,6 +44,7 @@
   <div class="pick" id="pick">
     <button type="button" data-u="effi">אפי<span>עבודה, יגאל, לוגיסטיקה</span></button>
     <button type="button" data-u="ben">בן<span>למידה, המשימה, יומן</span></button>
+    <button type="button" data-u="guest">אורח<span>המסלול והמפה, לקריאה בלבד</span></button>
   </div>
 
   <form id="form" autocomplete="on">
@@ -59,7 +60,7 @@
 <script>
 (function(){
   "use strict";
-  var NAMES = { effi: "אפי", ben: "בן" };
+  var NAMES = { effi: "אפי", ben: "בן", guest: "אורח" };
   var user = null;
 
   var pick = document.getElementById('pick');

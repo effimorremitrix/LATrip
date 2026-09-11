@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>לוס אנג'לס 2026 · המסלול</title>
+<meta name="description" content="מסלול הנסיעה ללוס אנג'לס, 23 בספטמבר עד 5 באוקטובר 2026, יום אחר יום עם מיקומים על המפה.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --petrol:#0F2A33; --petrol2:#1B4450; --paper:#FAF7F0; --paper2:#F0EBE0;
+    --hivis:#F2C230; --signal:#D94E28; --slate:#5A6A6F; --line:#DCD5C7;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--petrol);font-family:'Assistant',-apple-system,'Segoe UI',Arial,sans-serif;font-size:17px;line-height:1.6;padding-bottom:40px}
+  h1,h2,h3{font-family:'Rubik',-apple-system,Arial,sans-serif;font-weight:900;letter-spacing:-.01em;line-height:1.2;margin:0}
+  .wrap{max-width:900px;margin:0 auto;padding:0 18px}
+
+  header{background:var(--petrol);color:var(--paper);padding:18px 0}
+  .brand{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .brand h1{font-size:23px;color:var(--paper)}
+  .out{background:var(--hivis);color:var(--petrol);border:0;font-family:'Rubik';font-weight:700;font-size:14px;padding:7px 13px;cursor:pointer}
+  .out:focus-visible{outline:3px solid var(--paper);outline-offset:2px}
+  .dates{margin-top:10px;border-top:1px solid #24505E;padding-top:10px;color:#A9BEC4;font-size:15px;font-weight:600}
+
+  main{padding-top:22px}
+  h2.sec{font-size:20px;margin:30px 0 12px;padding-bottom:7px;border-bottom:3px solid var(--petrol)}
+  .lead{color:var(--slate);margin:0 0 4px;font-size:16px}
+
+  /* The side-by-side: what happens that day, next to where it happens.
+     One column below 700px, where two would be unreadable. */
+  .day{border:1px solid var(--line);background:#fff;margin-bottom:12px}
+  .day > .hd{background:var(--paper2);padding:9px 14px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  .day > .hd .dt{font-family:'Rubik';font-weight:700;font-size:14px;color:var(--slate)}
+  .day > .hd .ti{font-family:'Rubik';font-weight:900;font-size:17px}
+  .cols{display:grid;grid-template-columns:1fr 260px}
+  .cols > .plan{padding:12px 14px}
+  .cols > .geo{padding:12px 14px;border-right:1px solid var(--line);background:#FCFAF5}
+  @media (max-width:700px){
+    .cols{grid-template-columns:1fr}
+    .cols > .geo{border-right:0;border-top:1px solid var(--line)}
+  }
+  .row{display:flex;gap:9px;margin-bottom:6px}
+  .row b{font-family:'Rubik';font-weight:700;font-size:13px;color:var(--slate);flex:0 0 52px;padding-top:2px}
+  .row span{flex:1}
+  .geo .lbl{font-family:'Rubik';font-weight:700;font-size:13px;color:var(--slate);display:block;margin-bottom:7px}
+  .pins{display:flex;flex-direction:column;gap:6px}
+  .pins a{display:block;background:var(--petrol);color:var(--paper);text-decoration:none;font-weight:600;font-size:15px;padding:8px 11px;border:2px solid var(--petrol)}
+  .pins a:hover{background:var(--petrol2);border-color:var(--petrol2)}
+  .pins a:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:15px}
+  th,td{text-align:right;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:'Rubik';font-weight:700;font-size:13px;color:var(--slate);background:var(--paper2)}
+  .ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+
+  .card{border:1px solid var(--line);background:#fff;padding:14px}
+  .card p{margin:0 0 6px}
+  .card p:last-child{margin-bottom:0}
+  footer{margin-top:34px;color:var(--slate);font-size:14px;border-top:1px solid var(--line);padding-top:14px}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <h1>לוס אנג'לס 2026</h1>
+      <button type="button" class="out" id="out">יציאה</button>
+    </div>
+    <p class="dates">23 בספטמבר עד 5 באוקטובר · אפי ובן מור</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section aria-labelledby="h-days">
+  <h2 class="sec" id="h-days">המסלול, יום אחר יום</h2>
+  <p class="lead">כל מקום הוא קישור. לחיצה פותחת אותו באפליקציית המפות של הטלפון, על הנקודה עצמה.</p>
+  <div id="days"></div>
+  </section>
+
+  <section aria-labelledby="h-flights">
+  <h2 class="sec" id="h-flights">טיסות</h2>
+  <table>
+    <caption class="lead" style="text-align:right;caption-side:top">אוסטריאן ולופטהנזה, עם החלפת מטוס בווינה בדרך החוצה ובפרנקפורט בדרך חזרה.</caption>
+    <tr><th>תאריך</th><th>טיסה</th><th>מסלול</th></tr>
+    <tr><td>ד׳ 23.9</td><td><span class="ltr">OS84</span></td><td>תל אביב <span class="ltr">T3</span> 06:00, נחיתה בווינה 08:45</td></tr>
+    <tr><td>ד׳ 23.9</td><td><span class="ltr">OS51</span></td><td>וינה 09:55, נחיתה ב-<span class="ltr">LAX</span> טרמינל <span class="ltr">B</span> 13:05</td></tr>
+    <tr><td>ב׳ 5.10</td><td><span class="ltr">LH457</span></td><td><span class="ltr">LAX</span> 15:05, נחיתה בפרנקפורט <span class="ltr">T1</span> 11:00 למחרת</td></tr>
+    <tr><td>ג׳ 6.10</td><td><span class="ltr">LH694</span></td><td>פרנקפורט 14:00, נחיתה בתל אביב 19:15</td></tr>
+  </table>
+  </section>
+
+  <section aria-labelledby="h-base">
+  <h2 class="sec" id="h-base">איפה אנחנו</h2>
+  <div class="card">
+    <p><b>הבסיס:</b> <span class="ltr">117 S Doheny Drive, Los Angeles, CA 90048</span></p>
+    <p class="lead">ישראל מקדימה את לוס אנג'לס בעשר שעות, אז שבע בבוקר אצלנו הוא חמש אחר הצהריים אצלכם.</p>
+    <div class="pins" style="margin-top:10px">
+      <a href="https://www.google.com/maps/search/?api=1&amp;query=117%20S%20Doheny%20Dr%2C%20Los%20Angeles%2C%20CA%2090048" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128204;</span> הבסיס במפה</a>
+    </div>
+  </div>
+
+  </section>
+
+  <footer>
+    <p>הבקרים של 24 עד 30 בספטמבר תפוסים בעבודה, ואחר הצהריים פנוי. 1 ו-4 באוקטובר פנויים לגמרי.</p>
+  </footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* Substituted by the Worker: the guest projection of src/days.js, already
+     stripped of the working mornings and of our own notes. */
+  var DAYS = %%DAYS%%;
+
+  function esc(t){
+    return String(t).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function pretty(iso){
+    var wd=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+    var p=iso.split('-');
+    var dt=new Date(+p[0],+p[1]-1,+p[2]);
+    return 'יום '+wd[dt.getDay()]+', '+(+p[2])+'.'+(+p[1]);
+  }
+
+  /* A coordinate when we have one, because it pins the exact spot; the two home
+     addresses carry none and fall back to the verbatim address, which geocodes
+     more precisely than a coordinate typed by hand. The page never draws a map:
+     the phone's own map app is the map. */
+  function mapUrl(p){
+    return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.ll || p.q);
+  }
+
+  document.getElementById('days').innerHTML = DAYS.map(function(d){
+    var pins = (d.pl||[]).map(function(p){
+      return '<a href="'+esc(mapUrl(p))+'" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">\uD83D\uDCCC</span> '+esc(p.n)+'</a>';
+    }).join('');
+    /* The Worker already reduced each day to what a guest may see, so there is
+       nothing to filter here. */
+    return '<article class="day">'+
+      '<div class="hd"><span class="dt">'+esc(pretty(d.d))+'</span><span class="ti">'+esc(d.t)+'</span></div>'+
+      '<div class="cols">'+
+        '<div class="plan">'+
+          '<div class="row"><b>בוקר</b><span>'+esc(d.am)+'</span></div>'+
+          '<div class="row"><b>אחה״צ</b><span>'+esc(d.pm)+'</span></div>'+
+        '</div>'+
+        '<div class="geo">'+
+          '<span class="lbl">על המפה</span>'+
+          (pins?'<div class="pins">'+pins+'</div>':'<span class="lead">אין מיקום קבוע ליום הזה.</span>')+
+        '</div>'+
+      '</div>'+
+    '</article>';
+  }).join('');
+
+  document.getElementById('out').addEventListener('click', async function(){
+    try{ await fetch('/api/logout',{method:'POST'}); }catch(_){}
+    window.location.replace('/');
+  });
+})();
+</script>
+</body>
+</html>
