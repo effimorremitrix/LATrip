@@ -1,72 +1,50 @@
 #!/usr/bin/env node
 /**
- * Deploy the Worker with the current commit stamped into it.
+ * Deploy the Worker with the current commit stamped into it, and prove the
+ * deploy landed.
  *
- * Without this, a running Worker cannot tell you which commit it is, so a stale
- * deploy looks exactly like a broken one. After deploying, GET /version answers
- * the question in one request.
+ * Three failures this script exists to prevent, all of which have happened:
+ *
+ *   1. Deploying a stale checkout. `git pull` reports "Already up to date" when
+ *      you are on a branch that is not the one being merged into, so being up to
+ *      date says nothing about being current. The guard compares HEAD against
+ *      the tip of the remote default branch, after an actual fetch.
+ *   2. Deploying into the wrong Cloudflare account. `account_id` in
+ *      wrangler.toml pins it, and wrangler fails fast and loudly when the login
+ *      cannot see that account. This script only checks the pin is still there.
+ *   3. Believing a deploy that did not land. After deploying it reads
+ *      /version back off the live Worker and compares. A stale deploy has been
+ *      mistaken for a failed one before; this closes the loop in one step.
+ *
+ * Normal deploys come from Cloudflare Workers Builds on a push to the default
+ * branch, where the checkout is by definition the pushed commit and the git
+ * guards are skipped. Running it locally is the emergency path.
  *
  * Node rather than a shell one-liner so it behaves the same on Windows.
  *
- * Usage: npm run deploy [-- extra wrangler args]
+ * Usage: npm run deploy [-- --force] [-- --check] [-- extra wrangler args]
+ *        --force  deploy anyway when the guards object; for emergencies.
+ *        --check  run the guards, print what would be deployed, then stop.
+ *                 Nothing is uploaded. Use it to see whether you are clear to
+ *                 deploy without finding out the hard way.
  */
 
 import { execFileSync, spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
-/* ---------- account guard ----------
- *
- * LATrip lives in Effi's Cloudflare account. benmor2026.com, and the
- * `ben-la-proxy` Worker in front of it, live in Ben's. Nothing about the two
- * Workers is symmetric: the proxy pins Ben's account id in its own
- * wrangler.toml, and this check is the other half of that pair, refusing to
- * push LATrip into Ben's account if a `wrangler login` ever lands there.
- *
- * It is a deny-list rather than an allow-list on purpose: it needs no account
- * id of Effi's in the repository, and it fails closed on the one mistake that
- * actually matters.
- */
+const LIVE_URL = (process.env.LATRIP_URL || "https://latrip.effi-mor-e04.workers.dev").replace(/\/$/, "");
+const EFFI_ACCOUNT_ID = "e0492f11eda29c3c33b7962cff58418c";
 const BEN_ACCOUNT_ID = "2837794c628d7bc604f09eab31d7d548";
 
-function refuseBenAccount() {
-  const fail = (why) => {
-    console.error("");
-    console.error("  REFUSING TO DEPLOY: this would target Ben's Cloudflare account.");
-    console.error(`  ${why}`);
-    console.error("");
-    console.error("  LATrip belongs in Effi's account. Ben's account holds benmor2026.com");
-    console.error("  and the ben-la-proxy Worker, which is deployed from proxy/ instead.");
-    console.error("");
-    process.exit(1);
-  };
+const argv = process.argv.slice(2);
+const force = argv.includes("--force");
+const checkOnly = argv.includes("--check");
+const passthrough = argv.filter((a) => a !== "--force" && a !== "--check");
 
-  if ((process.env.CLOUDFLARE_ACCOUNT_ID || "").trim() === BEN_ACCOUNT_ID) {
-    fail("CLOUDFLARE_ACCOUNT_ID is set to Ben's account id.");
-  }
-
-  try {
-    const toml = readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8");
-    if (toml.includes(BEN_ACCOUNT_ID)) {
-      fail("wrangler.toml pins Ben's account id.");
-    }
-  } catch {
-    /* No wrangler.toml is wrangler's problem to report, not ours. */
-  }
-
-  /* Last case: no account id anywhere, so wrangler falls back to whichever
-     account the current login can see. If that is only Ben's, stop. */
-  const who = spawnSync("npx", ["--yes", "wrangler", "whoami"], {
-    encoding: "utf8",
-    shell: process.platform === "win32",
-  });
-  const out = `${who.stdout || ""}${who.stderr || ""}`;
-  const ids = out.match(/\b[0-9a-f]{32}\b/g) || [];
-  if (ids.length > 0 && ids.every((id) => id === BEN_ACCOUNT_ID)) {
-    fail("`wrangler whoami` sees Ben's account and no other.");
-  }
-}
-
-refuseBenAccount();
+/* Workers Builds sets WORKERS_CI. There the checkout is the commit that was
+   pushed, so the branch guards are meaningless, and the clone can be shallow
+   enough that they would fail on nothing. */
+const inCI = process.env.WORKERS_CI === "1" || process.env.CI === "true";
 
 function git(args, fallback = null) {
   try {
@@ -76,52 +54,132 @@ function git(args, fallback = null) {
   }
 }
 
-/* Version: the short SHA, marked dirty when the tree has uncommitted changes, so
-   a deploy of work-in-progress is labelled as such rather than claiming to be the
-   commit it was branched from. */
-const sha = git(["rev-parse", "--short", "HEAD"]);
-if (!sha) {
-  console.error("Not a git repository, or git is unavailable. Deploying without a version stamp.");
+/* `overridable` is false for the account pin: deploying LATrip into the wrong
+   Cloudflare account is never what anyone meant, so --force must not offer a
+   way through it. Offering one in the message would be worse than not having
+   it, because the next person would try it and lose a minute to nothing. */
+function refuse(what, fix, overridable = true) {
+  console.error("");
+  console.error(`  REFUSING TO DEPLOY: ${what}`);
+  console.error(`  ${fix}`);
+  if (overridable) {
+    console.error("");
+    console.error("  Deploy anyway with:  npm run deploy -- --force");
+  }
+  console.error("");
+  process.exit(1);
 }
-const dirty = sha && git(["status", "--porcelain"], "") !== "";
-const version = sha ? (dirty ? `${sha}-dirty` : sha) : "unknown";
+
+/* ---------- account ----------
+ *
+ * LATrip belongs in Effi's account; benmor2026.com and the ben-la-proxy Worker
+ * in front of it belong in Ben's. The pin in wrangler.toml is what enforces
+ * that at deploy time, so the only thing worth checking here is that the pin is
+ * still the right one. */
+{
+  const toml = readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8");
+  if (toml.includes(BEN_ACCOUNT_ID)) {
+    refuse(
+      "wrangler.toml pins Ben's account id.",
+      "LATrip belongs in Effi's account. Ben's account holds benmor2026.com and ben-la-proxy.",
+      false
+    );
+  }
+  if (!toml.includes(EFFI_ACCOUNT_ID)) {
+    refuse(
+      "wrangler.toml no longer pins Effi's account id.",
+      `Restore  account_id = "${EFFI_ACCOUNT_ID}"  in wrangler.toml.`,
+      false
+    );
+  }
+}
+
+/* ---------- what are we about to deploy ---------- */
+let version;
+if (inCI) {
+  const sha = process.env.WORKERS_CI_COMMIT_SHA || git(["rev-parse", "HEAD"], "");
+  version = sha ? sha.slice(0, 7) : "unknown";
+} else {
+  const sha = git(["rev-parse", "--short", "HEAD"]);
+  if (!sha) refuse("this is not a git repository, so the commit cannot be stamped.", "Deploy from a clone.", false);
+  const dirty = git(["status", "--porcelain"], "") !== "";
+
+  /* Fetch first. The old version of this check read a stale remote ref, so it
+     stayed quiet about a branch that was days behind. */
+  const fetched = spawnSync("git", ["fetch", "--quiet", "origin"], { stdio: "ignore" }).status === 0;
+  if (!fetched) {
+    console.warn("  Note: could not reach the remote; the branch check below may be stale.");
+  }
+  spawnSync("git", ["remote", "set-head", "origin", "-a"], { stdio: "ignore" });
+
+  const defaultRef = git(["symbolic-ref", "--short", "refs/remotes/origin/HEAD"]);
+  const defaultSha = defaultRef ? git(["rev-parse", defaultRef]) : null;
+  const headSha = git(["rev-parse", "HEAD"]);
+
+  if (defaultSha && headSha !== defaultSha && !force) {
+    const branch = git(["rev-parse", "--abbrev-ref", "HEAD"], "?");
+    refuse(
+      `HEAD (${branch} at ${sha}) is not the tip of ${defaultRef}.`,
+      `Run:  git checkout ${defaultRef.replace("origin/", "")} && git pull`
+    );
+  }
+  if (dirty && !force) {
+    refuse("the working tree has uncommitted changes.", "Commit them, or deploy a throwaway build with --force.");
+  }
+
+  version = dirty ? `${sha}-dirty` : sha;
+  if (dirty) console.warn(`  Note: uncommitted changes present, deploying as ${version}.`);
+}
+
 const deployed = new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
 
-/* The failure this whole script exists to prevent: deploying a clone that is
-   behind its remote. Warn, never block; sometimes deploying an older commit is
-   deliberate. No fetch, so this is only as fresh as the last one. */
-const behind = Number(git(["rev-list", "--count", "HEAD..@{u}"], "0"));
-if (Number.isFinite(behind) && behind > 0) {
-  console.warn("");
-  console.warn(`  WARNING: this branch is ${behind} commit(s) behind its remote.`);
-  console.warn("  You are about to deploy code that is not the latest.");
-  console.warn("  Run `git pull` first unless that is what you meant.");
-  console.warn("");
-}
-if (dirty) {
-  console.warn(`  Note: uncommitted changes present, deploying as ${version}.`);
+if (checkOnly) {
+  console.log(`  Clear to deploy. Would deploy ${version} to ${LIVE_URL}.`);
+  process.exit(0);
 }
 
 console.log(`Deploying ${version} (${deployed})`);
 
-const passthrough = process.argv.slice(2);
 const result = spawnSync(
   "npx",
-  [
-    "--yes",
-    "wrangler",
-    "deploy",
-    "--var",
-    `APP_VERSION:${version}`,
-    "--var",
-    `APP_DEPLOYED:${deployed}`,
-    ...passthrough,
-  ],
+  ["--yes", "wrangler", "deploy", "--var", `APP_VERSION:${version}`, "--var", `APP_DEPLOYED:${deployed}`, ...passthrough],
   { stdio: "inherit", shell: process.platform === "win32" }
 );
-
 if (result.error) {
   console.error(result.error.message);
   process.exit(1);
 }
-process.exit(result.status ?? 1);
+if (result.status !== 0) process.exit(result.status ?? 1);
+
+/* ---------- did it actually land ----------
+ *
+ * Reading the version back is the whole point: a deploy that uploaded an old
+ * checkout, or went to the wrong place, is otherwise indistinguishable from a
+ * good one until someone notices the app is missing a feature. */
+const deadline = Date.now() + 30_000;
+let live = null;
+for (;;) {
+  try {
+    const res = await fetch(`${LIVE_URL}/version`, { cache: "no-store" });
+    if (res.ok) {
+      live = await res.json();
+      if (live.version === version) break;
+    }
+  } catch {
+    /* propagation, or no network from here; the deadline decides */
+  }
+  if (Date.now() > deadline) break;
+  await new Promise((r) => setTimeout(r, 2000));
+}
+
+if (live && live.version === version) {
+  console.log(`\n  Verified live at ${LIVE_URL} : ${live.version} (${live.deployed})`);
+} else if (live) {
+  console.error(`\n  WARNING: ${LIVE_URL}/version still reports ${JSON.stringify(live.version)}, expected ${version}.`);
+  console.error("  The upload succeeded, so this is either slow propagation or a deploy to somewhere else.");
+  console.error(`  Check again:  curl ${LIVE_URL}/version`);
+  process.exit(1);
+} else {
+  console.warn(`\n  Could not read ${LIVE_URL}/version to confirm. Check it yourself:`);
+  console.warn(`    curl ${LIVE_URL}/version`);
+}

@@ -28,41 +28,88 @@ a separate document.
 
 ## Deploy
 
+**Normally you do not.** The repo is connected to Cloudflare Workers Builds, so
+merging a pull request into the default branch deploys it. That is the whole
+procedure: merge, then check `/version` below.
+
+The local path is the emergency one, for when you need a build that is not on
+the default branch:
+
 ```bash
 npm install
-npx wrangler login        # once, opens a browser
-npm run setup             # prompts for both passwords, generates AUTH_SECRET
 npm run deploy
 ```
 
-`npm run deploy` prints the live URL, `https://latrip.<your-subdomain>.workers.dev`.
+It refuses to run unless HEAD is the tip of the remote default branch and the
+tree is clean, because the mistake it exists to prevent is deploying a stale
+checkout: `git pull` says "Already up to date" when you are sitting on a branch
+that is not the one being merged into, so being up to date says nothing about
+being current. Override deliberately:
+
+```bash
+npm run deploy -- --force
+```
+
+Either way it stamps the commit in, then reads `/version` back off the live
+Worker and compares, so a deploy that did not land says so instead of looking
+like a success.
+
+First-time setup only:
+
+```bash
+npx wrangler login
+npm run setup             # prompts for the passwords, generates AUTH_SECRET
+```
 
 Then check the lock actually holds:
 
 ```bash
-bash scripts/smoke-test.sh https://latrip.<your-subdomain>.workers.dev
+bash scripts/smoke-test.sh https://latrip.effi-mor-e04.workers.dev
+bash scripts/smoke-test.sh https://benmor2026.com/la
 ```
+
+### The Workers Builds settings
+
+In Cloudflare, Worker `latrip` (Effi's account) → Settings → Builds:
+
+| Field | Value |
+|---|---|
+| Repository | `effimorremitrix/LATrip` |
+| Branch | `main` |
+| Build command | *(none)* |
+| Deploy command | `npm run deploy` |
+| Root directory | `/` |
+
+`scripts/deploy.mjs` detects `WORKERS_CI` and skips the git guards there, since
+in a build the checkout *is* the commit that was pushed, and takes the commit
+from `WORKERS_CI_COMMIT_SHA`. The account is pinned by `account_id` in
+`wrangler.toml`, so a build that somehow authenticated as the wrong account
+fails instead of deploying.
 
 ## Which commit is live
 
-`npm run deploy` stamps the current commit into the Worker, so a running deploy can
-tell you what it is:
+Every deploy stamps its commit into the Worker, so a running deploy can tell you
+what it is:
 
 ```bash
-curl https://latrip.<your-subdomain>.workers.dev/version
+curl https://latrip.effi-mor-e04.workers.dev/version
 ```
 
 ```json
-{ "version": "bfbb59b", "deployed": "2026-09-09T19:30:44Z" }
+{ "version": "a570eba", "deployed": "2026-09-11T05:40:43Z" }
 ```
 
-Compare it with `git rev-parse --short HEAD`. If they differ, the deploy is stale and
-`git pull && npm run deploy` fixes it. A `-dirty` suffix means uncommitted changes were
-deployed; `unknown` means someone ran `wrangler deploy` directly instead of
-`npm run deploy`.
+Compare it with the default branch. A `-dirty` suffix means uncommitted changes
+were deployed; `unknown` means someone ran `wrangler deploy` directly instead of
+going through `scripts/deploy.mjs`, and the stamp was lost.
 
-The deploy script also warns before deploying a branch that is behind its remote, which
-is the mistake this endpoint exists to make visible.
+You should rarely need to check by hand, because `npm run deploy` now reads this
+endpoint back after deploying and fails if it does not match what it just sent.
+That check exists because a stale deploy and a failed deploy look identical from
+the outside, and the two have been confused more than once.
+
+The same endpoint answers through the other door, `/la/version`, which is a quick
+way to confirm the proxy is pointed where you think it is.
 
 `/version` needs no login, so you can check it from a phone without signing in. It
 exposes only a short commit SHA.
@@ -106,6 +153,20 @@ Three things follow from it, and all three are deliberate:
   `/la/` with no build step and no base-path config. Do not "fix" these back to
   absolute paths; it would break the `/la` door silently, because
   `benmor2026.com/api/login` is Ben's site, not this app.
+
+### Where the proxy is actually deployed from
+
+`proxy/` in this repo is the **source of truth** and the reviewed copy. The
+running Worker was deployed from Ben's machine, out of his own repo, because the
+route lives in his zone and an OAuth token minted for this account cannot see
+his.
+
+So there are two copies of a file that nothing keeps in step. The proxy is
+seventy lines and finished, so this is cheap rather than free; but if you ever
+change it, change it **here**, then hand the new `proxy/src/index.js` to Ben to
+redeploy, and say so in the commit. Do not edit the deployed copy and let this
+one rot, for the same reason `docs/workflow-guide.he.md` is re-synced deliberately
+rather than edited in two places.
 
 Neither door is indexable. There is deliberately **no** `Disallow: /la` in Ben's
 `robots.txt`: a crawler has to be able to fetch the page to see the `noindex`,

@@ -68,12 +68,26 @@ This deploys to **Ben's** account, pinned by `account_id` in `wrangler.toml`.
 LATrip's own `scripts/deploy.mjs` refuses to deploy into that same account, so
 the two cannot be crossed by accident.
 
+**It has to be deployed from Ben's side.** An OAuth token minted for Effi's
+account does not carry a later-granted membership of Ben's, and wrangler then
+fails with `Authentication error [code: 10000]` and a warning that the
+`account_id` "does not match any of your authenticated accounts". That is not a
+permissions problem to debug; it is the token predating the membership. Deploy
+from Ben's machine, or from a Workers Build inside his account.
+
 ```bash
 cd proxy
 npm install
-npx wrangler login      # must be an account with Workers access to benmor2026.com
 npx wrangler deploy
 ```
+
+If a login is needed, use `npx wrangler login --device`. The default localhost
+callback flow crashes on Windows with a libuv assertion in `src\win\async.c`.
+
+**This directory is the source of truth.** The running Worker was deployed out
+of Ben's own repo, so a second copy of `src/index.js` exists over there with
+nothing keeping the two in step. Change this one, hand it to Ben to redeploy,
+and say so in the commit. Do not edit the deployed copy.
 
 If the deploy succeeds but attaching the route fails with an authorization
 error, the Workers Admin role does not carry zone-level route permission on this
