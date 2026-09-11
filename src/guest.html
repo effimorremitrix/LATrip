@@ -167,6 +167,10 @@
      this page is read on hotel wifi and on aeroplanes. */
   var DAYS = %%DAYS%%;
 
+  /* detectLang, applyLangSpans and applyLangButtons, substituted by the Worker
+     from src/lang.js so this page and the login page share one definition. */
+  %%LANG%%
+
   /* Everything the page says that is not a day. The static chrome is duplicated
      in the markup instead, as .l-he and .l-en pairs, so a guest with no
      JavaScript still gets a readable Hebrew page rather than an empty one. */
@@ -199,34 +203,6 @@
     return 'יום ' + T.he.wd[dt.getDay()] + ', ' + (+p[2]) + '.' + (+p[1]);
   }
 
-  /* Which language a guest gets before they touch anything. What someone reads
-     is a better guess than where they are standing, so the phone's language list
-     decides first and the first decisive entry wins; an Israeli cousin in Los
-     Angeles still lands in Hebrew. The timezone only breaks a tie, for a phone
-     set to some third language. The guest page stores nothing, here included,
-     so this runs again on every open. */
-  function detect(){
-    var list = [];
-    try{
-      if (navigator.languages && navigator.languages.length) list = [].slice.call(navigator.languages);
-      else if (navigator.language) list = [navigator.language];
-    }catch(_){}
-
-    for (var i = 0; i < list.length; i++){
-      var l = String(list[i]).toLowerCase();
-      /* "iw" is the retired ISO code for Hebrew; some Android builds still send it. */
-      if (l.indexOf('he') === 0 || l.indexOf('iw') === 0) return 'he';
-      if (l.indexOf('en') === 0) return 'en';
-    }
-
-    try{
-      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (tz === 'Asia/Jerusalem' || tz === 'Asia/Tel_Aviv') return 'he';
-    }catch(_){}
-
-    return 'en';
-  }
-
   /* A coordinate when we have one, because it pins the exact spot; the two home
      addresses carry none and fall back to the verbatim address, which geocodes
      more precisely than a coordinate typed by hand. The query itself is always
@@ -238,7 +214,6 @@
 
   var daysEl = document.getElementById('days');
   var langEl = document.getElementById('lang');
-  var buttons = langEl.querySelectorAll('button');
 
   function renderDays(lang){
     var t = T[lang];
@@ -275,18 +250,8 @@
     root.dir = isHe ? 'rtl' : 'ltr';
     document.title = t.title;
 
-    var show = document.querySelectorAll(isHe ? '.l-he' : '.l-en');
-    var hide = document.querySelectorAll(isHe ? '.l-en' : '.l-he');
-    Array.prototype.forEach.call(show, function(el){ el.hidden = false; });
-    Array.prototype.forEach.call(hide, function(el){ el.hidden = true; });
-
-    langEl.setAttribute('aria-label', t.group);
-    /* No aria-label here on purpose: each button is named by its own visible
-       word, so "עברית" and "English" are both what is written on it and what a
-       voice-control user has to say. The group carries the explanation. */
-    Array.prototype.forEach.call(buttons, function(b){
-      b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false');
-    });
+    applyLangSpans(isHe);
+    applyLangButtons(langEl, lang, t.group);
 
     renderDays(lang);
   }
@@ -301,7 +266,7 @@
     window.location.replace('./');
   });
 
-  apply(detect());
+  apply(detectLang());
 })();
 </script>
 </body>

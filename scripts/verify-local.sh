@@ -52,6 +52,11 @@ has "Referrer-Policy" "$h" "no-referrer"
 has "login page Cache-Control no-store" "$h" "no-store"
 has "meta robots in body" "$b" 'name="robots" content="noindex, nofollow, noarchive"'
 has "login form present" "$b" 'id="password"'
+has "login page title is the trip and work plan" "$b" "תוכנית טיול ועבודה לוס אנג'לס 2026"
+has "login page carries English too" "$b" ">English<"
+has "English login chrome starts hidden" "$b" '<span class="l-en" hidden>Los Angeles 2026 Trip and Work Plan</span>'
+has "shared language module substituted" "$b" "function detectLang"
+hasnt "no unreplaced template token" "$b" "%%LANG%%"
 has "relative login fetch" "$b" "fetch('api/login'"
 hasnt "no booking code leaked" "$b" "9JBMBP"
 hasnt "no itinerary leaked" "$b" "Doheny"

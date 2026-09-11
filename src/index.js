@@ -23,6 +23,7 @@ import APP_HTML from "./app.html";
 import GUEST_HTML from "./guest.html";
 import LOGIN_HTML from "./login.html";
 import { DAYS } from "./days.js";
+import { LANG_JS } from "./lang.js";
 
 const COOKIE_NAME = "trip_session";
 const SESSION_SECONDS = 60 * 60 * 24 * 30; // 30 days
@@ -39,7 +40,14 @@ const USERS = {
    with tabs hidden: tab filtering happens in the browser, so an app.html served
    to a guest would carry Effi's commercial notes and Ben's journal in the page
    source, one View Source away from anyone holding the shared password. */
-const TEMPLATES = { guest: GUEST_HTML };
+/* The language switch is defined once in src/lang.js and substituted into the
+   two templates that have a toggle, the same way the itinerary goes into
+   %%DAYS%%. Both substitutions happen here, at module load, because neither
+   depends on the request. src/app.html is Hebrew only and has no %%LANG%%. */
+const withLang = (template) => template.replace("%%LANG%%", () => LANG_JS);
+
+const LOGIN_PAGE = withLang(LOGIN_HTML);
+const TEMPLATES = { guest: withLang(GUEST_HTML) };
 
 /* The itinerary is substituted rather than inlined in each template, so a day is
    edited in one place. JSON is a subset of JS here except for the characters
@@ -355,7 +363,7 @@ async function route(request, env) {
     /* Clear a cookie that is expired or no longer verifies, so the browser
        stops sending it on every request. */
     const stale = readCookie(request, COOKIE_NAME);
-    return html(LOGIN_HTML, 200, stale ? { "Set-Cookie": sessionCookie("", 0) } : {});
+    return html(LOGIN_PAGE, 200, stale ? { "Set-Cookie": sessionCookie("", 0) } : {});
   }
 
   /* The app is ~26 KB gzipped and this page is opened many times a day on bad

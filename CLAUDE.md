@@ -27,7 +27,7 @@ All state is scoped per user: `trip:<user>:<key>`. Switching users must never le
 
 ## Hard rules
 
-1. **Hebrew, RTL, always.** `dir="rtl"` on the document. Any new copy is Hebrew. Latin strings (flight numbers, addresses, emails, URLs) get `dir="ltr"` on their own element so bidi does not mangle them. The single exception is the guest view, which carries an English translation behind a toggle because half the guests are in Los Angeles; see The guest view below. The app itself has no toggle and is not getting one, so anything you add to `src/app.html` is Hebrew.
+1. **Hebrew, RTL, always.** `dir="rtl"` on the document. Any new copy is Hebrew. Latin strings (flight numbers, addresses, emails, URLs) get `dir="ltr"` on their own element so bidi does not mangle them. The two exceptions are the entry page and the guest view, which each carry an English translation behind a toggle because half the people arriving are in Los Angeles; see The language switch below. The app itself has no toggle and is not getting one, so anything you add to `src/app.html` is Hebrew.
 2. **Hebrew prose uses commas and semicolons, never em dashes.**
 3. **Documents never leave the device.** The vault stores passport and ESTA photos. There is no upload path, no server storage, no analytics, no telemetry. Do not add one without an explicit decision from Effi, and the app tells the user this in plain language. Keep that sentence accurate.
 4. **Storage is layered and must stay that way:** `window.storage` if present, then `localStorage`, then an in-memory object. Every call is wrapped so a storage failure degrades the feature rather than breaking the page.
@@ -70,7 +70,7 @@ modules and served from it.
 
 | Route | Behaviour |
 |---|---|
-| `GET /` without a valid cookie | login page only; no trip content in the response |
+| `GET /` without a valid cookie | login page only, in Hebrew or English; no trip content in the response |
 | `POST /api/login` | password checked against a Cloudflare secret, sets the session cookie |
 | `GET /` with a valid cookie | app, with the verified user substituted into `%%TRIP_USER%%`, and the itinerary into `%%DAYS%%` |
 | `GET /` with a valid `guest` cookie | `src/guest.html`, with the guest projection of the itinerary |
@@ -261,22 +261,8 @@ four must stay:
    working mornings straight back into the guest response in the other language. When you
    add a field, decide for both languages at once.
 
-**The language toggle.** Hebrew and English are both in the guest response, and the toggle
-is a repaint of the page rather than a request: this is read on aeroplanes and on hotel
-wifi, and a language switch that needs the network is a language switch that fails exactly
-when it is wanted. The static chrome is duplicated in `src/guest.html` as `.l-he` and
-`.l-en` span pairs, with the English marked `hidden` in the markup, so a guest with no
-JavaScript still gets a readable Hebrew page; the days come from `en` on each day.
-
-The default is picked in the browser, from the phone's language list first and its timezone
-only as a tiebreak. What someone reads is a better guess than where they are standing, so
-an Israeli cousin in Los Angeles still lands in Hebrew, and Doheny Drive neighbours land in
-English. Deliberately **not** `request.cf.country`: geography answers the wrong question,
-and a body that varies by country varies the `ETag` with it.
-
-Nothing about the choice is stored, so point 3 stays literally true and a reload re-detects.
-That is the decision, not an oversight; if you ever make it persistent, it is one key and
-the guest-view section here has to say so.
+The guest page's own half of the language switch is the `en` field on each day; the
+rest is described in The language switch below.
 
 The working mornings are a handover of someone else's freight business. Session numbering,
 Deckhand, QuickBooks and the ownership transfer are Yigal's business, so a guest sees
@@ -285,6 +271,42 @@ Deckhand, QuickBooks and the ownership transfer are Yigal's business, so a guest
 
 Verify a change here by logging in as guest and grepping the response body, not by looking
 at the rendered page.
+
+## The language switch
+
+Two pages have one: `src/login.html`, the entry page anyone lands on, and
+`src/guest.html`. `src/app.html` does not and is not getting one.
+
+**Both languages ship in the one response, and the toggle is a repaint rather than a
+request.** This is read on aeroplanes and on hotel wifi, and a language switch that needs
+the network is a language switch that fails exactly when it is wanted. Static chrome is
+duplicated as `.l-he` and `.l-en` span pairs with the English marked `hidden` in the
+markup, so a visitor with no JavaScript gets a readable Hebrew page rather than both
+languages at once. Strings that script rewrites cannot be span pairs, so the entry page's
+subtitle and its error line come from a `T` dictionary instead, and every one of them is
+written by a single `paint()`; that is what keeps the subtitle, the error and the page
+title from falling out of step with the toggle.
+
+**`src/lang.js` is the one definition of the rule.** `detectLang`, `applyLangSpans` and
+`applyLangButtons` live there as a string that `src/index.js` substitutes into `%%LANG%%`
+in both templates, the same way the itinerary goes into `%%DAYS%%`. Two standalone pages
+with no build step would otherwise hold two copies of the detection rule and drift.
+
+**The default is picked in the browser**, from the phone's language list first and its
+timezone only as a tiebreak. What someone reads is a better guess than where they are
+standing, so an Israeli cousin in Los Angeles still lands in Hebrew, and Doheny Drive
+neighbours land in English. Deliberately **not** `request.cf.country`: geography answers
+the wrong question, and a body that varies by country varies the `ETag` with it.
+
+**Nothing about the choice is stored**, on either page, so the guest view's "writes
+nothing to storage" stays literally true and a reload re-detects. That is the decision,
+not an oversight; if you ever make it persistent it is one key, and this section has to
+say so.
+
+Both pages flip `dir` to `ltr` in English, so any new CSS here uses logical properties,
+`text-align:start` and `border-inline-start`, never the physical ones. The two toggle
+buttons read `עברית` and `English` and are named by their own visible text rather than by
+an `aria-label`, so what a voice-control user says is what is written on them.
 
 ## Content that must stay accurate
 

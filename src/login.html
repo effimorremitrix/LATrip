@@ -6,33 +6,51 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="theme-color" content="#0F2A33">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230F2A33'/%3E%3Ccircle cx='16' cy='13' r='7' fill='%23F2C230'/%3E%3Crect y='22' width='32' height='4' fill='%23F2C230'/%3E%3C/svg%3E">
-<title>לוס אנג'לס 2026 · כניסה</title>
+<title>תוכנית טיול ועבודה לוס אנג'לס 2026 · כניסה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700;900&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{ --petrol:#0F2A33; --paper:#FAF7F0; --hivis:#F2C230; --signal:#D94E28; }
+  /* --signal is the brand red, and it only reaches 3.6:1 on the petrol ground,
+     under the 4.5:1 that 15px bold needs. The error line is the one thing on
+     this page a person reads while already frustrated, so it gets a lifted
+     shade of the same red at 5.2:1. --signal itself is untouched; it is correct
+     on the paper ground the other pages use. */
+  :root{ --petrol:#0F2A33; --paper:#FAF7F0; --hivis:#F2C230; --signal:#D94E28; --signal-lift:#F4714B; }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0;height:100%}
   body{background:var(--petrol);color:var(--paper);font-family:'Assistant',-apple-system,'Segoe UI',Arial,sans-serif;font-size:17px;line-height:1.6;display:grid;place-items:center;padding:24px}
   .inner{max-width:420px;width:100%;text-align:center}
-  h1{font-family:'Rubik',-apple-system,Arial,sans-serif;font-weight:900;font-size:34px;letter-spacing:-.01em;line-height:1.2;margin:0}
+  /* The title is a sentence now, not two words, so it has to be allowed to
+     shrink rather than push the page sideways on a narrow phone. */
+  h1{font-family:'Rubik',-apple-system,Arial,sans-serif;font-weight:900;font-size:clamp(23px,6.5vw,32px);letter-spacing:-.01em;line-height:1.2;margin:0}
   .sub{color:#93A9AF;margin:8px 0 30px;font-size:16px}
 
+  /* The language switch. Both labels stay visible and the pressed one is filled,
+     so it reads as a state and not as a button whose effect you have to guess.
+     Neither label is ever translated: each is written in its own language, so an
+     English reader finds "English" while the page is still in Hebrew. */
+  .lang{display:inline-flex;border:2px solid var(--hivis);margin-bottom:20px}
+  .lang button{background:transparent;color:var(--hivis);border:0;font-family:'Rubik';font-weight:700;font-size:14px;line-height:1;padding:9px 14px;min-height:38px;cursor:pointer}
+  .lang button[aria-pressed="true"]{background:var(--hivis);color:var(--petrol)}
+  .lang button:focus-visible{outline:3px solid var(--paper);outline-offset:2px;position:relative}
+
   .pick{display:grid;gap:12px}
-  .pick button{background:none;border:2px solid #2C5866;color:var(--paper);padding:20px;font-family:'Rubik';font-weight:700;font-size:21px;cursor:pointer;text-align:right;display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%}
-  .pick button span{font-family:'Assistant';font-weight:400;font-size:14px;color:#93A9AF}
+  /* text-align is logical, not physical: the page flips to LTR in English. */
+  .pick button{background:none;border:2px solid #2C5866;color:var(--paper);padding:20px;font-family:'Rubik';font-weight:700;font-size:21px;cursor:pointer;text-align:start;display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%}
+  /* Scoped to .d, because the name and the two language spans are spans too. */
+  .pick button .d{font-family:'Assistant';font-weight:400;font-size:14px;color:#93A9AF;text-align:end}
   .pick button:hover,.pick button:focus-visible{border-color:var(--hivis);outline:none}
   .pick button.on{border-color:var(--hivis)}
 
-  form{display:none;margin-top:22px;text-align:right}
+  form{display:none;margin-top:22px;text-align:start}
   form.on{display:block}
   label{display:block;font-weight:700;font-size:15px;margin:0 0 6px;color:#93A9AF}
   input{width:100%;padding:16px;font-family:'Assistant';font-size:18px;background:#0A1F26;border:2px solid #2C5866;color:var(--paper)}
   input:focus{border-color:var(--hivis);outline:none}
   .go{margin-top:12px;width:100%;background:var(--hivis);color:var(--petrol);border:0;padding:18px;font-family:'Rubik';font-weight:900;font-size:19px;cursor:pointer}
   .go[disabled]{opacity:.5;cursor:default}
-  .err{margin-top:12px;color:var(--signal);font-weight:700;font-size:15px;min-height:22px;text-align:center}
+  .err{margin-top:12px;color:var(--signal-lift);font-weight:700;font-size:15px;min-height:22px;text-align:center}
   .back{margin-top:16px;background:none;border:0;color:#93A9AF;font-family:'Assistant';font-size:15px;cursor:pointer;text-decoration:underline;width:100%}
   @media (prefers-reduced-motion: reduce){*{transition:none !important}}
 </style>
@@ -40,64 +58,130 @@
 <body>
 
 <main class="inner">
-  <h1>לוס אנג'לס 2026</h1>
+  <div class="lang" role="group" id="lang" aria-label="שפה">
+    <button type="button" data-lang="he" lang="he" aria-pressed="true">עברית</button>
+    <button type="button" data-lang="en" lang="en" aria-pressed="false">English</button>
+  </div>
+
+  <h1><span class="l-he">תוכנית טיול ועבודה לוס אנג'לס 2026</span><span class="l-en" hidden>Los Angeles 2026 Trip and Work Plan</span></h1>
   <p class="sub" id="sub">23 בספטמבר עד 5 באוקטובר · מי אתה?</p>
 
   <div class="pick" id="pick">
-    <button type="button" data-u="effi">אפי<span>עבודה, יגאל, לוגיסטיקה</span></button>
-    <button type="button" data-u="ben">בן<span>למידה, המשימה, יומן</span></button>
-    <button type="button" data-u="guest">אורח<span>המסלול והמפה, לקריאה בלבד</span></button>
+    <button type="button" data-u="effi">
+      <span class="n"><span class="l-he">אפי</span><span class="l-en" hidden>Effi</span></span>
+      <span class="d"><span class="l-he">עבודה, יגאל, לוגיסטיקה</span><span class="l-en" hidden>Work, Yigal, logistics</span></span>
+    </button>
+    <button type="button" data-u="ben">
+      <span class="n"><span class="l-he">בן</span><span class="l-en" hidden>Ben</span></span>
+      <span class="d"><span class="l-he">למידה, המשימה, יומן</span><span class="l-en" hidden>Learning, the mission, the journal</span></span>
+    </button>
+    <button type="button" data-u="guest">
+      <span class="n"><span class="l-he">אורח</span><span class="l-en" hidden>Guest</span></span>
+      <span class="d"><span class="l-he">המסלול והמפה, לקריאה בלבד</span><span class="l-en" hidden>The itinerary and the map, read only</span></span>
+    </button>
   </div>
 
   <form id="form" autocomplete="on">
     <input type="hidden" name="username" id="username" autocomplete="username">
-    <label for="password">הסיסמה שלך</label>
+    <label for="password"><span class="l-he">הסיסמה שלך</span><span class="l-en" hidden>Your password</span></label>
     <input type="password" id="password" name="password" autocomplete="current-password" required aria-describedby="err">
-    <button type="submit" class="go" id="go">כניסה</button>
+    <button type="submit" class="go" id="go"><span class="l-he">כניסה</span><span class="l-en" hidden>Sign in</span></button>
     <div class="err" id="err" role="alert"></div>
-    <button type="button" class="back" id="back">חזרה לבחירת משתמש</button>
+    <button type="button" class="back" id="back"><span class="l-he">חזרה לבחירת משתמש</span><span class="l-en" hidden>Back to choosing a user</span></button>
   </form>
 </main>
 
 <script>
 (function(){
   "use strict";
-  var NAMES = { effi: "אפי", ben: "בן", guest: "אורח" };
-  var user = null;
 
-  var pick = document.getElementById('pick');
-  var form = document.getElementById('form');
-  var sub  = document.getElementById('sub');
-  var err  = document.getElementById('err');
-  var go   = document.getElementById('go');
-  var pw   = document.getElementById('password');
+  /* detectLang, applyLangSpans and applyLangButtons, substituted by the Worker
+     from src/lang.js so this page and the guest view share one definition. */
+  %%LANG%%
+
+  /* Everything this page says that is not fixed chrome. The subtitle and the
+     error line are rewritten by script, so they cannot be .l-he/.l-en pairs in
+     the markup and live here instead. */
+  var T = {
+    he: {
+      title: "תוכנית טיול ועבודה לוס אנג'לס 2026 · כניסה",
+      group: 'שפה',
+      who: '23 בספטמבר עד 5 באוקטובר · מי אתה?',
+      enter: ' · הזן סיסמה',
+      names: { effi: 'אפי', ben: 'בן', guest: 'אורח' },
+      errs: { wrong: 'סיסמה שגויה', stuck: 'משהו נתקע. נסה שוב.', offline: 'אין חיבור לרשת. נסה שוב.' }
+    },
+    en: {
+      title: 'Los Angeles 2026 Trip and Work Plan · Sign in',
+      group: 'Language',
+      who: '23 September to 5 October · Who are you?',
+      enter: ' · enter your password',
+      names: { effi: 'Effi', ben: 'Ben', guest: 'Guest' },
+      errs: { wrong: 'Wrong password', stuck: 'Something jammed. Try again.', offline: 'No network connection. Try again.' }
+    }
+  };
+
+  var lang = 'he';
+  var user = null;
+  var errKey = null;
+
+  var pick  = document.getElementById('pick');
+  var form  = document.getElementById('form');
+  var sub   = document.getElementById('sub');
+  var err   = document.getElementById('err');
+  var go    = document.getElementById('go');
+  var pw    = document.getElementById('password');
+  var langEl = document.getElementById('lang');
+
+  /* One place that writes every language-dependent string, so the subtitle, the
+     error and the page title cannot fall out of step with the toggle. */
+  function paint(){
+    var isHe = lang === 'he';
+    var t = T[lang];
+
+    document.documentElement.lang = lang;
+    document.documentElement.dir = isHe ? 'rtl' : 'ltr';
+    document.title = t.title;
+
+    applyLangSpans(isHe);
+    applyLangButtons(langEl, lang, t.group);
+
+    sub.textContent = user ? t.names[user] + t.enter : t.who;
+    err.textContent = errKey ? t.errs[errKey] : '';
+  }
 
   function choose(u){
     user = u;
+    errKey = null;
     document.getElementById('username').value = u;
-    sub.textContent = NAMES[u] + ' · הזן סיסמה';
     Array.prototype.forEach.call(pick.querySelectorAll('button'), function(b){
       b.classList.toggle('on', b.dataset.u === u);
     });
     form.classList.add('on');
-    err.textContent = '';
     pw.removeAttribute('aria-invalid');
     pw.value = '';
+    paint();
     pw.focus();
   }
 
   function reset(){
     user = null;
+    errKey = null;
     form.classList.remove('on');
-    sub.textContent = "23 בספטמבר עד 5 באוקטובר · מי אתה?";
     Array.prototype.forEach.call(pick.querySelectorAll('button'), function(b){
       b.classList.remove('on');
     });
+    paint();
   }
 
   pick.addEventListener('click', function(e){
-    var b = e.target.closest('button');
+    var b = e.target.closest('button[data-u]');
     if (b) choose(b.dataset.u);
+  });
+
+  langEl.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button[data-lang]') : null;
+    if (b) { lang = b.getAttribute('data-lang'); paint(); }
   });
 
   document.getElementById('back').addEventListener('click', reset);
@@ -106,6 +190,7 @@
     e.preventDefault();
     if (!user) return;
     go.disabled = true;
+    errKey = null;
     err.textContent = '';
     pw.removeAttribute('aria-invalid');
     try{
@@ -115,10 +200,11 @@
         body: JSON.stringify({ user: user, password: pw.value })
       });
       if (res.ok) { window.location.replace('./'); return; }
-      err.textContent = res.status === 401 ? 'סיסמה שגויה' : 'משהו נתקע. נסה שוב.';
+      errKey = res.status === 401 ? 'wrong' : 'stuck';
     }catch(_){
-      err.textContent = 'אין חיבור לרשת. נסה שוב.';
+      errKey = 'offline';
     }
+    paint();
     pw.setAttribute('aria-invalid', 'true');
     go.disabled = false;
     /* One field, one error: focus goes back to it with the wrong value selected,
@@ -126,6 +212,9 @@
     pw.focus();
     pw.select();
   });
+
+  lang = detectLang();
+  paint();
 })();
 </script>
 </body>
