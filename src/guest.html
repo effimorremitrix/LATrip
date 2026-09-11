@@ -25,8 +25,19 @@
   header{background:var(--petrol);color:var(--paper);padding:18px 0}
   .brand{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .brand h1{font-size:23px;color:var(--paper)}
-  .out{background:var(--hivis);color:var(--petrol);border:0;font-family:'Rubik';font-weight:700;font-size:14px;padding:7px 13px;cursor:pointer}
+  .ctl{display:flex;align-items:center;gap:8px}
+  .out{background:var(--hivis);color:var(--petrol);border:0;font-family:'Rubik';font-weight:700;font-size:14px;padding:7px 13px;min-height:38px;cursor:pointer}
   .out:focus-visible{outline:3px solid var(--paper);outline-offset:2px}
+
+  /* The language switch. Both labels stay visible and the pressed one is filled,
+     so it reads as a state and not as a button whose effect you have to guess.
+     Neither label is ever translated: each is written in its own language, so an
+     English reader finds "English" while the page is still in Hebrew. */
+  .lang{display:inline-flex;border:2px solid var(--hivis)}
+  .lang button{background:transparent;color:var(--hivis);border:0;font-family:'Rubik';font-weight:700;font-size:14px;line-height:1;padding:7px 12px;min-height:34px;min-width:44px;cursor:pointer}
+  .lang button[aria-pressed="true"]{background:var(--hivis);color:var(--petrol)}
+  .lang button:focus-visible{outline:3px solid var(--paper);outline-offset:2px;position:relative}
+
   .dates{margin-top:10px;border-top:1px solid #24505E;padding-top:10px;color:#A9BEC4;font-size:15px;font-weight:600}
 
   main{padding-top:22px}
@@ -41,13 +52,17 @@
   .day > .hd .ti{font-family:'Rubik';font-weight:900;font-size:17px}
   .cols{display:grid;grid-template-columns:1fr 260px}
   .cols > .plan{padding:12px 14px}
-  .cols > .geo{padding:12px 14px;border-right:1px solid var(--line);background:#FCFAF5}
+  /* Logical, not physical: the separator has to face the plan column in both
+     directions, and the page flips to LTR when the guest reads English. */
+  .cols > .geo{padding:12px 14px;border-inline-start:1px solid var(--line);background:#FCFAF5}
   @media (max-width:700px){
     .cols{grid-template-columns:1fr}
-    .cols > .geo{border-right:0;border-top:1px solid var(--line)}
+    .cols > .geo{border-inline-start:0;border-top:1px solid var(--line)}
   }
   .row{display:flex;gap:9px;margin-bottom:6px}
   .row b{font-family:'Rubik';font-weight:700;font-size:13px;color:var(--slate);flex:0 0 52px;padding-top:2px}
+  /* "Afternoon" does not fit where "אחה״צ" did. */
+  html[lang="en"] .row b{flex-basis:76px}
   .row span{flex:1}
   .geo .lbl{font-family:'Rubik';font-weight:700;font-size:13px;color:var(--slate);display:block;margin-bottom:7px}
   .pins{display:flex;flex-direction:column;gap:6px}
@@ -56,7 +71,7 @@
   .pins a:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
 
   table{width:100%;border-collapse:collapse;margin-top:8px;font-size:15px}
-  th,td{text-align:right;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th,td{text-align:start;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
   th{font-family:'Rubik';font-weight:700;font-size:13px;color:var(--slate);background:var(--paper2)}
   .ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
 
@@ -72,47 +87,73 @@
 <header>
   <div class="wrap">
     <div class="brand">
-      <h1>לוס אנג'לס 2026</h1>
-      <button type="button" class="out" id="out">יציאה</button>
+      <h1><span class="l-he">לוס אנג'לס 2026</span><span class="l-en" hidden>Los Angeles 2026</span></h1>
+      <div class="ctl">
+        <div class="lang" role="group" id="lang" aria-label="שפה">
+          <button type="button" data-lang="he" lang="he" aria-pressed="true">עברית</button>
+          <button type="button" data-lang="en" lang="en" aria-pressed="false">English</button>
+        </div>
+        <button type="button" class="out" id="out"><span class="l-he">יציאה</span><span class="l-en" hidden>Sign out</span></button>
+      </div>
     </div>
-    <p class="dates">23 בספטמבר עד 5 באוקטובר · אפי ובן מור</p>
+    <p class="dates"><span class="l-he">23 בספטמבר עד 5 באוקטובר · אפי ובן מור</span><span class="l-en" hidden>23 September to 5 October · Effi and Ben Mor</span></p>
   </div>
 </header>
 
 <main class="wrap">
 
   <section aria-labelledby="h-days">
-  <h2 class="sec" id="h-days">המסלול, יום אחר יום</h2>
-  <p class="lead">כל מקום הוא קישור. לחיצה פותחת אותו באפליקציית המפות של הטלפון, על הנקודה עצמה.</p>
+  <h2 class="sec" id="h-days"><span class="l-he">המסלול, יום אחר יום</span><span class="l-en" hidden>The trip, day by day</span></h2>
+  <p class="lead"><span class="l-he">כל מקום הוא קישור. לחיצה פותחת אותו באפליקציית המפות של הטלפון, על הנקודה עצמה.</span><span class="l-en" hidden>Every place is a link. Tapping one opens it in your phone's map app, right on the spot.</span></p>
   <div id="days"></div>
   </section>
 
   <section aria-labelledby="h-flights">
-  <h2 class="sec" id="h-flights">טיסות</h2>
+  <h2 class="sec" id="h-flights"><span class="l-he">טיסות</span><span class="l-en" hidden>Flights</span></h2>
   <table>
-    <caption class="lead" style="text-align:right;caption-side:top">אוסטריאן ולופטהנזה, עם החלפת מטוס בווינה בדרך החוצה ובפרנקפורט בדרך חזרה.</caption>
-    <tr><th>תאריך</th><th>טיסה</th><th>מסלול</th></tr>
-    <tr><td>ד׳ 23.9</td><td><span class="ltr">OS84</span></td><td>תל אביב <span class="ltr">T3</span> 06:00, נחיתה בווינה 08:45</td></tr>
-    <tr><td>ד׳ 23.9</td><td><span class="ltr">OS51</span></td><td>וינה 09:55, נחיתה ב-<span class="ltr">LAX</span> טרמינל <span class="ltr">B</span> 13:05</td></tr>
-    <tr><td>ב׳ 5.10</td><td><span class="ltr">LH457</span></td><td><span class="ltr">LAX</span> 15:05, נחיתה בפרנקפורט <span class="ltr">T1</span> 11:00 למחרת</td></tr>
-    <tr><td>ג׳ 6.10</td><td><span class="ltr">LH694</span></td><td>פרנקפורט 14:00, נחיתה בתל אביב 19:15</td></tr>
+    <caption class="lead" style="text-align:start;caption-side:top"><span class="l-he">אוסטריאן ולופטהנזה, עם החלפת מטוס בווינה בדרך החוצה ובפרנקפורט בדרך חזרה.</span><span class="l-en" hidden>Austrian and Lufthansa, changing planes in Vienna on the way out and in Frankfurt on the way back.</span></caption>
+    <tr>
+      <th><span class="l-he">תאריך</span><span class="l-en" hidden>Date</span></th>
+      <th><span class="l-he">טיסה</span><span class="l-en" hidden>Flight</span></th>
+      <th><span class="l-he">מסלול</span><span class="l-en" hidden>Route</span></th>
+    </tr>
+    <tr>
+      <td><span class="l-he">ד׳ 23.9</span><span class="l-en" hidden>Wed 23 Sep</span></td>
+      <td><span class="ltr">OS84</span></td>
+      <td><span class="l-he">תל אביב <span class="ltr">T3</span> 06:00, נחיתה בווינה 08:45</span><span class="l-en" hidden>Tel Aviv <span class="ltr">T3</span> 06:00, landing in Vienna 08:45</span></td>
+    </tr>
+    <tr>
+      <td><span class="l-he">ד׳ 23.9</span><span class="l-en" hidden>Wed 23 Sep</span></td>
+      <td><span class="ltr">OS51</span></td>
+      <td><span class="l-he">וינה 09:55, נחיתה ב-<span class="ltr">LAX</span> טרמינל <span class="ltr">B</span> 13:05</span><span class="l-en" hidden>Vienna 09:55, landing at <span class="ltr">LAX</span> Terminal <span class="ltr">B</span> 13:05</span></td>
+    </tr>
+    <tr>
+      <td><span class="l-he">ב׳ 5.10</span><span class="l-en" hidden>Mon 5 Oct</span></td>
+      <td><span class="ltr">LH457</span></td>
+      <td><span class="l-he"><span class="ltr">LAX</span> 15:05, נחיתה בפרנקפורט <span class="ltr">T1</span> 11:00 למחרת</span><span class="l-en" hidden><span class="ltr">LAX</span> 15:05, landing in Frankfurt <span class="ltr">T1</span> 11:00 the next day</span></td>
+    </tr>
+    <tr>
+      <td><span class="l-he">ג׳ 6.10</span><span class="l-en" hidden>Tue 6 Oct</span></td>
+      <td><span class="ltr">LH694</span></td>
+      <td><span class="l-he">פרנקפורט 14:00, נחיתה בתל אביב 19:15</span><span class="l-en" hidden>Frankfurt 14:00, landing in Tel Aviv 19:15</span></td>
+    </tr>
   </table>
   </section>
 
   <section aria-labelledby="h-base">
-  <h2 class="sec" id="h-base">איפה אנחנו</h2>
+  <h2 class="sec" id="h-base"><span class="l-he">איפה אנחנו</span><span class="l-en" hidden>Where we are</span></h2>
   <div class="card">
-    <p><b>הבסיס:</b> <span class="ltr">117 S Doheny Drive, Los Angeles, CA 90048</span></p>
-    <p class="lead">ישראל מקדימה את לוס אנג'לס בעשר שעות, אז שבע בבוקר אצלנו הוא חמש אחר הצהריים אצלכם.</p>
+    <p><b><span class="l-he">הבסיס:</span><span class="l-en" hidden>Our place:</span></b> <span class="ltr">117 S Doheny Drive, Los Angeles, CA 90048</span></p>
+    <p class="lead"><span class="l-he">ישראל מקדימה את לוס אנג'לס בעשר שעות, אז שבע בבוקר אצלנו הוא חמש אחר הצהריים אצלכם.</span><span class="l-en" hidden>Israel is ten hours ahead of Los Angeles, so 07:00 where we are is 17:00 in Israel.</span></p>
     <div class="pins" style="margin-top:10px">
-      <a href="https://www.google.com/maps/search/?api=1&amp;query=117%20S%20Doheny%20Dr%2C%20Los%20Angeles%2C%20CA%2090048" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128204;</span> הבסיס במפה</a>
+      <a href="https://www.google.com/maps/search/?api=1&amp;query=117%20S%20Doheny%20Dr%2C%20Los%20Angeles%2C%20CA%2090048" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128204;</span> <span class="l-he">הבסיס במפה</span><span class="l-en" hidden>Our place on the map</span></a>
     </div>
   </div>
 
   </section>
 
   <footer>
-    <p>הבקרים של 24 עד 30 בספטמבר תפוסים בעבודה, ואחר הצהריים פנוי. 1 ו-4 באוקטובר פנויים לגמרי.</p>
+    <p><span class="l-he">הבקרים של 24 עד 30 בספטמבר תפוסים בעבודה, ואחר הצהריים פנוי. 1 ו-4 באוקטובר פנויים לגמרי.</span><span class="l-en" hidden>Mornings from 24 to 30 September are taken up with work, and the afternoons are free. 1 and 4 October are free all day.</span></p>
   </footer>
 </main>
 
@@ -121,8 +162,29 @@
   "use strict";
 
   /* Substituted by the Worker: the guest projection of src/days.js, already
-     stripped of the working mornings and of our own notes. */
+     stripped of the working mornings and of our own notes. Each day carries its
+     English alongside its Hebrew, so the toggle is a repaint and not a request:
+     this page is read on hotel wifi and on aeroplanes. */
   var DAYS = %%DAYS%%;
+
+  /* Everything the page says that is not a day. The static chrome is duplicated
+     in the markup instead, as .l-he and .l-en pairs, so a guest with no
+     JavaScript still gets a readable Hebrew page rather than an empty one. */
+  var T = {
+    he: {
+      title: "לוס אנג'לס 2026 · המסלול",
+      group: 'שפה',
+      am: 'בוקר', pm: 'אחה״צ', map: 'על המפה', nowhere: 'אין מיקום קבוע ליום הזה.',
+      wd: ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת']
+    },
+    en: {
+      title: 'Los Angeles 2026 · The trip',
+      group: 'Language',
+      am: 'Morning', pm: 'Afternoon', map: 'On the map', nowhere: 'No fixed place that day.',
+      wd: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+      mo: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    }
+  };
 
   function esc(t){
     return String(t).replace(/[&<>"']/g, function(c){
@@ -130,46 +192,116 @@
     });
   }
 
-  function pretty(iso){
-    var wd=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-    var p=iso.split('-');
-    var dt=new Date(+p[0],+p[1]-1,+p[2]);
-    return 'יום '+wd[dt.getDay()]+', '+(+p[2])+'.'+(+p[1]);
+  function pretty(iso, lang){
+    var p = iso.split('-');
+    var dt = new Date(+p[0], +p[1]-1, +p[2]);
+    if (lang === 'en') return T.en.wd[dt.getDay()] + ', ' + (+p[2]) + ' ' + T.en.mo[+p[1]-1];
+    return 'יום ' + T.he.wd[dt.getDay()] + ', ' + (+p[2]) + '.' + (+p[1]);
+  }
+
+  /* Which language a guest gets before they touch anything. What someone reads
+     is a better guess than where they are standing, so the phone's language list
+     decides first and the first decisive entry wins; an Israeli cousin in Los
+     Angeles still lands in Hebrew. The timezone only breaks a tie, for a phone
+     set to some third language. The guest page stores nothing, here included,
+     so this runs again on every open. */
+  function detect(){
+    var list = [];
+    try{
+      if (navigator.languages && navigator.languages.length) list = [].slice.call(navigator.languages);
+      else if (navigator.language) list = [navigator.language];
+    }catch(_){}
+
+    for (var i = 0; i < list.length; i++){
+      var l = String(list[i]).toLowerCase();
+      /* "iw" is the retired ISO code for Hebrew; some Android builds still send it. */
+      if (l.indexOf('he') === 0 || l.indexOf('iw') === 0) return 'he';
+      if (l.indexOf('en') === 0) return 'en';
+    }
+
+    try{
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz === 'Asia/Jerusalem' || tz === 'Asia/Tel_Aviv') return 'he';
+    }catch(_){}
+
+    return 'en';
   }
 
   /* A coordinate when we have one, because it pins the exact spot; the two home
      addresses carry none and fall back to the verbatim address, which geocodes
-     more precisely than a coordinate typed by hand. The page never draws a map:
-     the phone's own map app is the map. */
+     more precisely than a coordinate typed by hand. The query itself is always
+     English, in both languages, because that is what map apps resolve. The page
+     never draws a map: the phone's own map app is the map. */
   function mapUrl(p){
-    return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.ll || p.q);
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(p.ll || p.q);
   }
 
-  document.getElementById('days').innerHTML = DAYS.map(function(d){
-    var pins = (d.pl||[]).map(function(p){
-      return '<a href="'+esc(mapUrl(p))+'" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">\uD83D\uDCCC</span> '+esc(p.n)+'</a>';
+  var daysEl = document.getElementById('days');
+  var langEl = document.getElementById('lang');
+  var buttons = langEl.querySelectorAll('button');
+
+  function renderDays(lang){
+    var t = T[lang];
+    daysEl.innerHTML = DAYS.map(function(d){
+      /* The Worker already reduced each day to what a guest may see, and put the
+         English of that reduced day in `en`, so there is nothing to filter here. */
+      var say = (lang === 'en' && d.en) ? d.en : d;
+      var pins = (d.pl||[]).map(function(p){
+        var label = (lang === 'en' && p.en) ? p.en : p.n;
+        return '<a href="'+esc(mapUrl(p))+'" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">\uD83D\uDCCC</span> '+esc(label)+'</a>';
+      }).join('');
+      return '<article class="day">'+
+        '<div class="hd"><span class="dt">'+esc(pretty(d.d, lang))+'</span><span class="ti">'+esc(say.t)+'</span></div>'+
+        '<div class="cols">'+
+          '<div class="plan">'+
+            '<div class="row"><b>'+esc(t.am)+'</b><span>'+esc(say.am)+'</span></div>'+
+            '<div class="row"><b>'+esc(t.pm)+'</b><span>'+esc(say.pm)+'</span></div>'+
+          '</div>'+
+          '<div class="geo">'+
+            '<span class="lbl">'+esc(t.map)+'</span>'+
+            (pins?'<div class="pins">'+pins+'</div>':'<span class="lead">'+esc(t.nowhere)+'</span>')+
+          '</div>'+
+        '</div>'+
+      '</article>';
     }).join('');
-    /* The Worker already reduced each day to what a guest may see, so there is
-       nothing to filter here. */
-    return '<article class="day">'+
-      '<div class="hd"><span class="dt">'+esc(pretty(d.d))+'</span><span class="ti">'+esc(d.t)+'</span></div>'+
-      '<div class="cols">'+
-        '<div class="plan">'+
-          '<div class="row"><b>בוקר</b><span>'+esc(d.am)+'</span></div>'+
-          '<div class="row"><b>אחה״צ</b><span>'+esc(d.pm)+'</span></div>'+
-        '</div>'+
-        '<div class="geo">'+
-          '<span class="lbl">על המפה</span>'+
-          (pins?'<div class="pins">'+pins+'</div>':'<span class="lead">אין מיקום קבוע ליום הזה.</span>')+
-        '</div>'+
-      '</div>'+
-    '</article>';
-  }).join('');
+  }
+
+  function apply(lang){
+    var isHe = lang === 'he';
+    var t = T[lang];
+    var root = document.documentElement;
+
+    root.lang = lang;
+    root.dir = isHe ? 'rtl' : 'ltr';
+    document.title = t.title;
+
+    var show = document.querySelectorAll(isHe ? '.l-he' : '.l-en');
+    var hide = document.querySelectorAll(isHe ? '.l-en' : '.l-he');
+    Array.prototype.forEach.call(show, function(el){ el.hidden = false; });
+    Array.prototype.forEach.call(hide, function(el){ el.hidden = true; });
+
+    langEl.setAttribute('aria-label', t.group);
+    /* No aria-label here on purpose: each button is named by its own visible
+       word, so "עברית" and "English" are both what is written on it and what a
+       voice-control user has to say. The group carries the explanation. */
+    Array.prototype.forEach.call(buttons, function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false');
+    });
+
+    renderDays(lang);
+  }
+
+  langEl.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button[data-lang]') : null;
+    if (b) apply(b.getAttribute('data-lang'));
+  });
 
   document.getElementById('out').addEventListener('click', async function(){
     try{ await fetch('api/logout',{method:'POST'}); }catch(_){}
     window.location.replace('./');
   });
+
+  apply(detect());
 })();
 </script>
 </body>

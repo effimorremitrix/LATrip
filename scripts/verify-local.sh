@@ -101,6 +101,10 @@ hasnt "no working mornings" "$b" "סשן"
 hasnt "no booking code" "$b" "9JBMBP"
 hasnt "no passenger total" "$b" "4,427"
 hasnt "no Ben mission" "$b" "שלושה עסקים"
+has "Hebrew and English both in the body" "$b" ">English<"
+has "English itinerary present" "$b" "Work morning"
+has "English chrome starts hidden" "$b" '<span class="l-en" hidden>Los Angeles 2026</span>'
+hasnt "English hides what Hebrew hides" "$b" "Session 1"
 
 echo "== 8. logout clears the /la cookie =="
 h=$(C -i -o - -X POST -H "Cookie: $CK" "$P/la/api/logout")

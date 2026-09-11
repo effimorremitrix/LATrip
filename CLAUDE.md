@@ -27,7 +27,7 @@ All state is scoped per user: `trip:<user>:<key>`. Switching users must never le
 
 ## Hard rules
 
-1. **Hebrew, RTL, always.** `dir="rtl"` on the document. Any new copy is Hebrew. Latin strings (flight numbers, addresses, emails, URLs) get `dir="ltr"` on their own element so bidi does not mangle them.
+1. **Hebrew, RTL, always.** `dir="rtl"` on the document. Any new copy is Hebrew. Latin strings (flight numbers, addresses, emails, URLs) get `dir="ltr"` on their own element so bidi does not mangle them. The single exception is the guest view, which carries an English translation behind a toggle because half the guests are in Los Angeles; see The guest view below. The app itself has no toggle and is not getting one, so anything you add to `src/app.html` is Hebrew.
 2. **Hebrew prose uses commas and semicolons, never em dashes.**
 3. **Documents never leave the device.** The vault stores passport and ESTA photos. There is no upload path, no server storage, no analytics, no telemetry. Do not add one without an explicit decision from Effi, and the app tells the user this in plain language. Keep that sentence accurate.
 4. **Storage is layered and must stay that way:** `window.storage` if present, then `localStorage`, then an in-memory object. Every call is wrapped so a storage failure degrades the feature rather than breaking the page.
@@ -230,17 +230,18 @@ into `%%DAYS%%` in whichever template it is serving, so a day is edited in one p
 the app and the guest view cannot drift apart.
 
 Place data is the `pl:` array on each `DAYS` entry, as
-`{n: 'Hebrew label', q: 'search query', ll: 'lat,lng'}`. Queries are English for US
-landmarks because map apps resolve those far more reliably; the label the user sees stays
-Hebrew. `ll` is preferred over `q` when present, because it pins the exact spot: "Malibu"
+`{n: 'Hebrew label', en: 'English label', q: 'search query', ll: 'lat,lng'}`. Queries are
+English for US landmarks because map apps resolve those far more reliably; the label the
+user sees is Hebrew in the app, and Hebrew or English in the guest view. `en` is read only
+by the guest view, and `src/index.js` strips it back out of the payload it hands the app. `ll` is preferred over `q` when present, because it pins the exact spot: "Malibu"
 as text is a whole city. The two fixed addresses deliberately carry **no** `ll`; a
 verbatim street address geocodes more precisely than a coordinate typed by hand. They
 come from Trip facts above and are quoted verbatim.
 
 ## The guest view
 
-`src/guest.html`, served only to a `guest` session. Three things make it safe, and all
-three must stay:
+`src/guest.html`, served only to a `guest` session. Four things make it safe, and all
+four must stay:
 
 1. **It is a separate template, not the app with tabs hidden.** Tab filtering happens in
    the browser, so an `app.html` served to a guest would carry Effi's commercial notes and
@@ -254,6 +255,28 @@ three must stay:
 3. **It shows the flight times, never the booking code, the passenger names or the
    USD 4,427.20.** The guest page holds no checklist, no journal and no vault, and writes
    nothing to storage.
+4. **The English is the English of the GUEST day, never of the real one.** A day's `en`
+   says `Work morning`, never the session number, because `en` is rendered by the one page
+   that is allowed to see only `gt`. Translating `t` or `n` into `en` would walk the
+   working mornings straight back into the guest response in the other language. When you
+   add a field, decide for both languages at once.
+
+**The language toggle.** Hebrew and English are both in the guest response, and the toggle
+is a repaint of the page rather than a request: this is read on aeroplanes and on hotel
+wifi, and a language switch that needs the network is a language switch that fails exactly
+when it is wanted. The static chrome is duplicated in `src/guest.html` as `.l-he` and
+`.l-en` span pairs, with the English marked `hidden` in the markup, so a guest with no
+JavaScript still gets a readable Hebrew page; the days come from `en` on each day.
+
+The default is picked in the browser, from the phone's language list first and its timezone
+only as a tiebreak. What someone reads is a better guess than where they are standing, so
+an Israeli cousin in Los Angeles still lands in Hebrew, and Doheny Drive neighbours land in
+English. Deliberately **not** `request.cf.country`: geography answers the wrong question,
+and a body that varies by country varies the `ETag` with it.
+
+Nothing about the choice is stored, so point 3 stays literally true and a reload re-detects.
+That is the decision, not an oversight; if you ever make it persistent, it is one key and
+the guest-view section here has to say so.
 
 The working mornings are a handover of someone else's freight business. Session numbering,
 Deckhand, QuickBooks and the ownership transfer are Yigal's business, so a guest sees
