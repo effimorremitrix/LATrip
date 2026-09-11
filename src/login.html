@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="theme-color" content="#0F2A33">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230F2A33'/%3E%3Ccircle cx='16' cy='13' r='7' fill='%23F2C230'/%3E%3Crect y='22' width='32' height='4' fill='%23F2C230'/%3E%3C/svg%3E">
 <title>לוס אנג'לס 2026 · כניסה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,7 +39,7 @@
 </head>
 <body>
 
-<div class="inner">
+<main class="inner">
   <h1>לוס אנג'לס 2026</h1>
   <p class="sub" id="sub">23 בספטמבר עד 5 באוקטובר · מי אתה?</p>
 
@@ -50,12 +52,12 @@
   <form id="form" autocomplete="on">
     <input type="hidden" name="username" id="username" autocomplete="username">
     <label for="password">הסיסמה שלך</label>
-    <input type="password" id="password" name="password" autocomplete="current-password" required>
+    <input type="password" id="password" name="password" autocomplete="current-password" required aria-describedby="err">
     <button type="submit" class="go" id="go">כניסה</button>
-    <div class="err" id="err" role="alert" aria-live="polite"></div>
+    <div class="err" id="err" role="alert"></div>
     <button type="button" class="back" id="back">חזרה לבחירת משתמש</button>
   </form>
-</div>
+</main>
 
 <script>
 (function(){
@@ -79,6 +81,7 @@
     });
     form.classList.add('on');
     err.textContent = '';
+    pw.removeAttribute('aria-invalid');
     pw.value = '';
     pw.focus();
   }
@@ -104,18 +107,23 @@
     if (!user) return;
     go.disabled = true;
     err.textContent = '';
+    pw.removeAttribute('aria-invalid');
     try{
-      var res = await fetch('/api/login', {
+      var res = await fetch('api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user: user, password: pw.value })
       });
-      if (res.ok) { window.location.replace('/'); return; }
+      if (res.ok) { window.location.replace('./'); return; }
       err.textContent = res.status === 401 ? 'סיסמה שגויה' : 'משהו נתקע. נסה שוב.';
     }catch(_){
       err.textContent = 'אין חיבור לרשת. נסה שוב.';
     }
+    pw.setAttribute('aria-invalid', 'true');
     go.disabled = false;
+    /* One field, one error: focus goes back to it with the wrong value selected,
+       so the next keystroke replaces it. */
+    pw.focus();
     pw.select();
   });
 })();

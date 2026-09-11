@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="theme-color" content="#0F2A33">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230F2A33'/%3E%3Ccircle cx='16' cy='13' r='7' fill='%23F2C230'/%3E%3Crect y='22' width='32' height='4' fill='%23F2C230'/%3E%3C/svg%3E">
 <title>לוס אנג'לס 2026 · מור</title>
 <script>/* replaced by the Worker with the signed-in user */
   window.__TRIP_USER__ = "%%TRIP_USER%%";</script>
@@ -148,9 +151,9 @@
   </div>
 </header>
 
-<nav><div class="tabs" id="tabs"></div></nav>
+<nav aria-label="לשוניות"><div class="tabs" id="tabs"></div></nav>
 
-<div class="wrap">
+<main class="wrap" id="main">
 
 <!-- ===== SHARED: TODAY ===== -->
 <section id="t_today">
@@ -204,7 +207,7 @@
   <h2>ההחלטה של הבוקר הראשון</h2>
   <p>לפני שנוגעים בקוד, יגאל צריך לבחור. הכול למטה תלוי בזה.</p>
   <table>
-    <tr><th></th><th>מסלול א׳</th><th>מסלול ב׳</th></tr>
+    <tr><td></td><th scope="col">מסלול א׳</th><th scope="col">מסלול ב׳</th></tr>
     <tr><td class="day">מה זה</td><td>Tidelane הופכת לאיך שהחברה שלו באמת עובדת</td><td>יגאל הופך למשתמש של Tidelane, שנשארת המוצר שלי</td></tr>
     <tr><td class="day">התוצר</td><td>המשלוחים האמיתיים שלו במערכת, אנשים אמיתיים, QuickBooks מחובר</td><td>שותף עיצוב ראשון: שימוש חינם, משלוחים אמיתיים ומשוב כן, הבעלות נשארת שלי</td></tr>
     <tr><td class="day">בר-ביצוע בשבועיים</td><td>כן, בקושי</td><td>לא</td></tr>
@@ -289,7 +292,7 @@
 
     <details class="g"><summary>התמונה הגדולה</summary><div class="bd">
       <p>המערכת היא <b>מגדל פיקוח של נמל</b>: כל הגורמים בשרשרת, יצואן, יבואן, משלח בינלאומי וחברת ספנות, יושבים על אותו מסך אחד במקום להתכתב במיילים.</p>
-      <pre class="code">login  &#8594;  new booking  &#8594;  tracking  &#8594;  documents
+      <pre class="code" tabindex="0">login  &#8594;  new booking  &#8594;  tracking  &#8594;  documents
       &#8594;  collaboration  &#8594;  invoicing  &#8594;  analytics</pre>
       <p class="note">כלל אצבע לעבודה יומית: מתחילים מהחריגים, לא מרשימת כל המשלוחים.</p>
     </div></details>
@@ -320,13 +323,13 @@
     <details class="g"><summary>שלב 0 · מי אתם במערכת</summary><div class="bd">
       <p>לכל משתמש שני מאפיינים שקובעים מה הוא רואה ומה מותר לו.</p>
       <p class="grp">תפקיד, מה מותר לעשות</p>
-      <div class="tw"><table>
+      <div class="tw" tabindex="0"><table>
         <tr><td class="day"><code>admin</code></td><td>הכול, כולל ניהול משתמשים והגדרת אינטגרציות</td></tr>
         <tr><td class="day"><code>ops</code></td><td>להזמין, לאשר מסמכים, להגיב, למשוך חשבוניות</td></tr>
         <tr><td class="day"><code>viewer</code></td><td>צפייה בלבד</td></tr>
       </table></div>
       <p class="grp">ארגון, מה רואים</p>
-      <div class="tw"><table>
+      <div class="tw" tabindex="0"><table>
         <tr><td class="day"><code>internal</code></td><td>Tidelane. את כל המשלוחים ברשת</td></tr>
         <tr><td class="day"><code>shipper</code></td><td>יצואן. רק משלוחים שהם צד בהם</td></tr>
         <tr><td class="day"><code>forwarder</code></td><td>משלח. רק משלוחים שהם משלחים</td></tr>
@@ -339,7 +342,7 @@
 
     <details class="g"><summary>חשבונות הדגמה</summary><div class="bd">
       <p>הסיסמה לכל החשבונות: <code>tidelane-demo</code></p>
-      <div class="tw"><table>
+      <div class="tw" tabindex="0"><table>
         <tr><th>אימייל</th><th>תפקיד</th><th>ארגון</th></tr>
         <tr><td><span dir="ltr">effi@tidelane.demo</span></td><td><code>admin</code></td><td>Tidelane, פנימי</td></tr>
         <tr><td><span dir="ltr">ops@tidelane.demo</span></td><td><code>ops</code></td><td>Tidelane, פנימי</td></tr>
@@ -364,7 +367,7 @@
 
     <details class="g"><summary>שלב 2 · הזמנה חדשה</summary><div class="bd">
       <p>אשף בארבעה שלבים. רק <code>admin</code> ו-<code>ops</code> יכולים להזמין.</p>
-      <div class="tw"><table>
+      <div class="tw" tabindex="0"><table>
         <tr><td class="day">1. Route</td><td>נמל מוצא, נמל יעד, ותנאי סחר: <span dir="ltr">FOB, CIF, EXW, DDP</span></td></tr>
         <tr><td class="day">2. Cargo</td><td>סוג וכמות קונטיינרים: <span dir="ltr">20DV, 40DV, 40HC, 40RF</span>, משקל ותיאור המטען</td></tr>
         <tr><td class="day">3. Schedule</td><td>בוחרים הפלגה; לכל אפשרות מוצגים מחיר, זמן שיט, ופליטות CO₂</td></tr>
@@ -377,7 +380,7 @@
     <details class="g"><summary>שלב 3 · מעקב אחרי המשלוח</summary><div class="bd">
       <p><b>א. עמוד Shipments.</b> טבלה עם חיפוש וסינון של כל המשלוחים שמותר לכם לראות. לחיצה על שורה פותחת את כרטיס המשלוח.</p>
       <p class="grp">ציר אבני הדרך, מתוכנן מול בפועל, שמונה תחנות</p>
-      <pre class="code">booking_confirmed &#8594; container_gate_in &#8594; loaded_on_vessel
+      <pre class="code" tabindex="0">booking_confirmed &#8594; container_gate_in &#8594; loaded_on_vessel
 &#8594; vessel_departed &#8594; transshipment &#8594; vessel_arrived
 &#8594; gate_out &#8594; delivered</pre>
       <ul class="dot">
@@ -391,7 +394,7 @@
 
     <details class="g"><summary>שלב 4 · מסמכים ואישורים</summary><div class="bd">
       <p>עמוד Documents הוא מרשם חוצה-משלוחים של כל המסמכים.</p>
-      <div class="tw"><table>
+      <div class="tw" tabindex="0"><table>
         <tr><td class="day"><code>SI</code></td><td>הוראות שילוח</td></tr>
         <tr><td class="day"><code>BL</code></td><td>שטר מטען</td></tr>
         <tr><td class="day"><code>VGM</code></td><td>הצהרת משקל מאומת</td></tr>
@@ -434,7 +437,7 @@
     </div></details>
 
     <details class="g"><summary>האינטגרציות</summary><div class="bd">
-      <div class="tw"><table>
+      <div class="tw" tabindex="0"><table>
         <tr><th>מחבר</th><th>למה משמש</th><th>מצב היום</th></tr>
         <tr><td>CBP ACE</td><td>מכס אמריקאי: סטטוס ISF 10+2, כניסה ושחרור</td><td>Mock עד שיחוברו מפרטי הספק</td></tr>
         <tr><td>E2open INTTRA</td><td>לוחות הפלגות לאשף ההזמנה</td><td>Mock</td></tr>
@@ -450,7 +453,7 @@
     </div></details>
 
     <details class="g"><summary>תרחישים נפוצים</summary><div class="bd">
-      <div class="tw"><table>
+      <div class="tw" tabindex="0"><table>
         <tr><th>מה רוצים</th><th>מה עושים</th></tr>
         <tr><td>משלוח באיחור</td><td>Dashboard ← חריגים ← כרטיס המשלוח ← איפה נעצר בציר אבני הדרך ← הערה למוביל</td></tr>
         <tr><td>לקוח שואל איפה הסחורה</td><td>Track &amp; Trace ← מאתרים את האונייה. או Shipments ← חיפוש לפי מספר הזמנה</td></tr>
@@ -465,7 +468,7 @@
     <h2>חלק ב׳: פיתוח ועלייה לאוויר</h2>
 
     <details class="g"><summary>מבנה הפרויקט</summary><div class="bd">
-      <div class="tw"><table>
+      <div class="tw" tabindex="0"><table>
         <tr><td class="day"><code>src/</code></td><td>אפליקציית React 19 + Vite + Tailwind v4, הצד שהמשתמש רואה</td></tr>
         <tr><td class="day"><code>worker/</code></td><td>ה-API: Cloudflare Worker, ראוטר ידני, סשנים בעוגייה, כ-25 נקודות קצה תחת <code>/api/*</code></td></tr>
         <tr><td class="day"><code>integrations/</code></td><td>המחברים החיצוניים: ACE, INTTRA, QuickBooks</td></tr>
@@ -477,7 +480,7 @@
     </div></details>
 
     <details class="g"><summary>הרצה מקומית</summary><div class="bd">
-      <pre class="code">npm install                  # פעם אחת
+      <pre class="code" tabindex="0">npm install                  # פעם אחת
 npm run db:migrate:local     # בסיס נתונים מקומי + זריעה
 npm run dev:worker           # השרת: http://localhost:8787
 npm run dev                  # אופציונלי: Vite על :5173
@@ -500,14 +503,14 @@ npm run build                # בדיקת טיפוסים + בנייה</pre>
     </div></details>
 
     <details class="g"><summary>בדיקות</summary><div class="bd">
-      <pre class="code">npm run db:reset:local
+      <pre class="code" tabindex="0">npm run db:reset:local
 npm run test:e2e</pre>
       <p>הבדיקות מכסות התחברות והתנתקות וסיסמה שגויה, חסימת כתיבה למשתמש צופה, הפרדת ארגונים כולל חסימת גישה ישירה דרך URL ואי-גישה לחשבוניות, שמירת הגדרות, ניהול אינטגרציות, זרימת החיבור ל-QuickBooks עד לשער של Intuit, משיכת חשבוניות במצב Mock, והמשכיות של הזמנה, הערה ואישור אחרי רענון.</p>
       <p><b>כלל:</b> לפני כל דחיפה מריצים <code>npm run build</code> ואת בדיקות ה-e2e.</p>
     </div></details>
 
     <details class="g"><summary>מחזור העבודה בגיט</summary><div class="bd">
-      <pre class="code">git checkout -b claude/my-feature
+      <pre class="code" tabindex="0">git checkout -b claude/my-feature
 npm run build &amp;&amp; npm run test:e2e
 git add -A &amp;&amp; git commit -m "..."
 git push -u origin claude/my-feature</pre>
@@ -521,7 +524,7 @@ git push -u origin claude/my-feature</pre>
 
     <details class="g"><summary>עלייה לאוויר וסודות</summary><div class="bd">
       <p>הריפו מחובר ל-Cloudflare Workers Builds: כל דחיפה לענף הראשי מפעילה דיפלוי אוטומטי. לדיפלוי ידני: <code>npm run deploy</code>.</p>
-      <pre class="code">cp .dev.vars.example .dev.vars
+      <pre class="code" tabindex="0">cp .dev.vars.example .dev.vars
 npx wrangler secret put CREDENTIALS_KEY
 npx wrangler secret put QUICKBOOKS_CLIENT_ID
 npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
@@ -534,7 +537,7 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
     </div></details>
 
     <details class="g"><summary>סיכום מהיר: מה עושים מתי</summary><div class="bd">
-      <div class="tw"><table>
+      <div class="tw" tabindex="0"><table>
         <tr><th>מצב</th><th>הפקודות</th></tr>
         <tr><td>מתחילים לעבוד</td><td><code>npm install</code>, <code>db:migrate:local</code>, <code>dev:worker</code></td></tr>
         <tr><td>עובדים על מסכים</td><td>להוסיף <code>npm run dev</code></td></tr>
@@ -818,7 +821,7 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
   </div>
 </section>
 
-</div>
+</main>
 
 <script>
 (function(){
@@ -1153,8 +1156,8 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
     }
   }
   document.getElementById('whoBtn').addEventListener('click',async function(){
-    try{ await fetch('/api/logout',{method:'POST'}); }catch(e){}
-    window.location.replace('/');
+    try{ await fetch('api/logout',{method:'POST'}); }catch(e){}
+    window.location.replace('./');
   });
 
   /* wire journals once */

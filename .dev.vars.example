@@ -3,3 +3,4 @@
 AUTH_SECRET=any-random-string-for-local-dev
 PASSWORD_EFFI=choose-one
 PASSWORD_BEN=choose-one
+PASSWORD_GUEST=choose-one

@@ -79,6 +79,41 @@ re-checks the session cookie on every open. Signing out, or an expired cookie, m
 next open returns the login page rather than a 304 onto content the browser still has.
 The login page and every API route stay `no-store`.
 
+## The second door: benmor2026.com/la
+
+The app is also reachable at **https://benmor2026.com/la/**, Ben's own domain.
+That is not a second deployment. It is a 60-line proxy Worker, `proxy/`, living
+in Ben's Cloudflare account, forwarding to this Worker and stripping the `/la`
+prefix on the way. See `proxy/README.md`.
+
+```
+phone -> benmor2026.com/la/...  ->  latrip.effi-mor-e04.workers.dev/...
+         Ben's account                Effi's account
+         ben-la-proxy                 latrip
+```
+
+Three things follow from it, and all three are deliberate:
+
+- **The `workers.dev` URL stays enabled.** It is the origin the proxy fetches.
+  Cloudflare Service Bindings do not cross accounts, so there is no private
+  channel available here. Both doors are password-gated and both send
+  `X-Robots-Tag: noindex, nofollow, noarchive`.
+- **The two doors have separate sessions.** The cookie at `/la` is re-scoped to
+  `Path=/la` by the proxy, so it is never sent to the rest of Ben's site.
+  Signing in at one door does not sign you in at the other.
+- **In-page URLs are relative, not absolute.** `fetch('api/login')`, not
+  `fetch('/api/login')`. The same HTML then resolves correctly at `/` and at
+  `/la/` with no build step and no base-path config. Do not "fix" these back to
+  absolute paths; it would break the `/la` door silently, because
+  `benmor2026.com/api/login` is Ben's site, not this app.
+
+Neither door is indexable. There is deliberately **no** `Disallow: /la` in Ben's
+`robots.txt`: a crawler has to be able to fetch the page to see the `noindex`,
+and a blocked URL can still be listed from inbound links alone.
+
+`scripts/deploy.mjs` refuses to deploy this Worker into Ben's account, and
+`proxy/wrangler.toml` pins Ben's account id, so the two cannot be crossed.
+
 ## Passwords
 
 They live only in Cloudflare, as encrypted Worker secrets. They are not in this
@@ -121,8 +156,13 @@ npm run dev                        # http://127.0.0.1:8787
 src/index.js     Worker: routing, login, session cookies, security headers
 src/login.html   Login page (Hebrew, RTL, same palette as the app)
 src/app.html     The trip app itself
-scripts/         setup-secrets.sh (one-time secrets), smoke-test.sh (post-deploy)
-wrangler.toml    Worker config; both HTML files are imported as text modules
+src/guest.html   Read-only itinerary served to a guest session
+src/days.js      The itinerary, substituted into whichever template is served
+scripts/         setup-secrets.sh (one-time secrets), smoke-test.sh (post-deploy),
+                 verify-local.sh (both doors, locally, without deploying)
+proxy/           ben-la-proxy: the benmor2026.com/la door, deployed separately
+                 to Ben's Cloudflare account
+wrangler.toml    Worker config; the HTML files are imported as text modules
 ```
 
 ## Adding a third person

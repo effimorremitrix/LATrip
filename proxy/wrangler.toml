@@ -1,0 +1,30 @@
+name = "ben-la-proxy"
+main = "src/index.js"
+compatibility_date = "2026-09-09"
+
+# BEN's account, not Effi's. This Worker is bound to a route on benmor2026.com,
+# which lives in Ben's zone, so it can only be deployed there. Never remove this
+# line: without it wrangler picks whichever account the current login happens to
+# have, and deploying this to the LATrip account would be silently wrong.
+account_id = "2837794c628d7bc604f09eab31d7d548"
+
+# No ben-la-proxy.workers.dev. The only way in is through benmor2026.com/la.
+workers_dev = false
+
+# Two patterns, not one.
+#
+# `benmor2026.com/la*` would also match /laptop, /latest, /labs and anything else
+# on Ben's site that happens to start with "la", swallow it, and forward it to
+# LATrip with the first three characters cut off. These two patterns match
+# exactly /la and /la/<anything> and leave the rest of Ben's site alone.
+routes = [
+  { pattern = "benmor2026.com/la", zone_name = "benmor2026.com" },
+  { pattern = "benmor2026.com/la/*", zone_name = "benmor2026.com" },
+]
+
+# No [vars] here on purpose. ORIGIN is only ever set in .dev.vars for local
+# `wrangler dev`; in production the constant in src/index.js is what runs, so a
+# misconfigured var cannot silently repoint the proxy at something else.
+
+# No Service Binding. Bindings do not cross Cloudflare accounts, and LATrip is
+# in Effi's. See the comment at the top of src/index.js.

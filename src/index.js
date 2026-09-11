@@ -70,7 +70,7 @@ const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "no-referrer",
-  "X-Robots-Tag": "noindex, nofollow",
+  "X-Robots-Tag": "noindex, nofollow, noarchive",
   "Content-Security-Policy": [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline'",

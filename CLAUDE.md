@@ -116,6 +116,44 @@ visibility into password guessing.
 
 Deployment and rotation detail lives in README.md. Do not duplicate it here.
 
+## The /la door on benmor2026.com
+
+The app answers at two URLs. `latrip.effi-mor-e04.workers.dev` is the origin, and
+`benmor2026.com/la/` is a proxy in front of it: `proxy/`, a Worker called
+`ben-la-proxy` deployed to **Ben's** Cloudflare account (`2837794c...d548`), not
+Effi's. Cloudflare Service Bindings do not cross accounts, so the proxy fetches
+the public origin; the `workers.dev` URL therefore has to stay enabled, and both
+doors stay password-gated and `noindex`.
+
+Four things here are load-bearing:
+
+1. **In-page URLs are relative.** `fetch('api/login')` and
+   `location.replace('./')`, never `/api/login` or `/`. That one choice is what
+   lets the same HTML work at `/` and at `/la/` with no build step. Absolute
+   paths under `/la` resolve to `benmor2026.com/api/login`, which is Ben's site;
+   the login would fail with no visible error. Do not "tidy" these.
+2. **The proxy never touches cache headers.** It passes the `ETag` and
+   `private, no-cache` through, for the reason in Auth and deploy above: this
+   page is reopened many times a day on bad wifi. A blanket `no-store` at the
+   proxy would undo that and protect nothing, since `private` already keeps the
+   app out of shared caches.
+3. **The routes are `benmor2026.com/la` and `benmor2026.com/la/*`, not
+   `/la*`.** The single-wildcard form also swallows `/laptop`, `/latest` and
+   anything else on Ben's site starting with those two letters, and forwards it
+   to LATrip with the first three characters cut off.
+4. **`robots.txt` on benmor2026.com must not `Disallow: /la`.** A crawler has to
+   be able to fetch the page in order to see the `noindex`. Blocking the path
+   instead is what gets a URL listed with no description rather than not listed
+   at all. `/la` likewise never goes in Ben's sitemap or navigation.
+
+The proxy owns the path rewrite, the cookie re-scoping to `Path=/la`, and the
+noindex headers. It owns nothing else; in particular it never sees a password
+and never decides who anyone is. `scripts/deploy.mjs` refuses to deploy LATrip
+into Ben's account, which is the other half of the pin in `proxy/wrangler.toml`.
+
+`bash scripts/verify-local.sh` exercises both doors against two local `wrangler
+dev` servers, without deploying anything.
+
 ## Tidelane, Deckhand and the two tracks
 
 Tidelane is Effi's container shipping product. **Deckhand** is its core: container and
