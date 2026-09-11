@@ -3,6 +3,14 @@ main = "src/index.js"
 compatibility_date = "2026-09-09"
 workers_dev = true
 
+# Effi's account. LATrip belongs here; benmor2026.com and the ben-la-proxy
+# Worker in front of it belong in Ben's (2837794c...d548), and proxy/ is
+# deployed there separately. Pinning the account means a login that cannot see
+# it fails immediately with a clear message, rather than deploying somewhere
+# unexpected. scripts/deploy.mjs refuses to run if this line goes missing or
+# turns into Ben's id.
+account_id = "e0492f11eda29c3c33b7962cff58418c"
+
 # The app and login pages are plain HTML, imported into the Worker as text.
 rules = [
   { type = "Text", globs = ["**/*.html"], fallthrough = false }

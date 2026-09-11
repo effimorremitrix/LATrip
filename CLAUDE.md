@@ -99,11 +99,19 @@ serves nothing. That is deliberate: an unconfigured deploy is locked, not open.
 After deploying, run `bash scripts/smoke-test.sh <url>`, which checks the auth
 boundary from outside.
 
-Deploy with `npm run deploy`, never bare `wrangler deploy`. The npm script runs
-`scripts/deploy.mjs`, which stamps the current commit into `APP_VERSION` and warns if
-the branch is behind its remote. `curl <url>/version` then says which commit is live,
-so a stale deploy is distinguishable from a broken one. This matters: a stale deploy
-has already been mistaken for a failed one once.
+**Merging into the default branch is what deploys.** The repo is connected to
+Cloudflare Workers Builds, whose deploy command is `npm run deploy`. Deploying
+by hand is the emergency path, and then it is `npm run deploy`, never bare
+`wrangler deploy`, which loses the version stamp.
+
+`scripts/deploy.mjs` stamps the commit into `APP_VERSION`, and refuses to run
+locally unless HEAD is the tip of the remote default branch and the tree is
+clean (`--force` overrides; the account pin does not). It then reads
+`/version` back off the live Worker and fails if it does not match what it just
+sent. Every one of those guards is there because the corresponding mistake was
+actually made: a stale deploy has been mistaken for a failed one, and a checkout
+sitting on the wrong branch has been deployed while `git pull` said "Already up
+to date".
 
 **On rule 3 and telemetry.** The vault is still client-side only, document
 bytes never reach the Worker, and the sentence at `src/app.html:161` telling
@@ -148,8 +156,21 @@ Four things here are load-bearing:
 
 The proxy owns the path rewrite, the cookie re-scoping to `Path=/la`, and the
 noindex headers. It owns nothing else; in particular it never sees a password
-and never decides who anyone is. `scripts/deploy.mjs` refuses to deploy LATrip
-into Ben's account, which is the other half of the pin in `proxy/wrangler.toml`.
+and never decides who anyone is.
+
+**`proxy/` here is the source of truth; the running Worker was deployed from
+Ben's machine out of his own repo.** An OAuth token minted for Effi's account
+cannot see Ben's, so the deploy has to happen there. That leaves two copies of
+one file with nothing keeping them in step. The proxy is seventy lines and
+finished, so this is cheap rather than free, but if it ever changes: change it
+here, hand the new `proxy/src/index.js` to Ben to redeploy, and say so in the
+commit. Never edit the deployed copy and let this one rot; it is the same
+re-sync discipline as `docs/workflow-guide.he.md` in The מדריך tab below.
+
+Each side is pinned to its own account so they cannot be crossed:
+`account_id` in `wrangler.toml` is Effi's, `account_id` in
+`proxy/wrangler.toml` is Ben's, and `scripts/deploy.mjs` refuses to run if the
+first one goes missing or turns into the second.
 
 `bash scripts/verify-local.sh` exercises both doors against two local `wrangler
 dev` servers, without deploying anything.
