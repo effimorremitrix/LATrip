@@ -12,7 +12,7 @@
 <style>
   :root{
     --petrol:#0F2A33; --petrol2:#1B4450; --paper:#FAF7F0; --paper2:#F0EBE0;
-    --hivis:#F2C230; --signal:#D94E28; --slate:#6B7B80; --line:#DCD5C7;
+    --hivis:#F2C230; --signal:#D94E28; --signal-ink:#B23A1B; --slate:#5A6A6F; --line:#DCD5C7;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
@@ -44,7 +44,7 @@
   p{margin:0 0 12px}
   .note{color:var(--slate);font-size:15px}
   .warn{background:var(--paper2);border-right:5px solid var(--signal);padding:13px 15px;margin:0 0 16px}
-  .warn b{color:var(--signal)}
+  .warn b{color:var(--signal-ink)}
 
   .today{background:var(--petrol);color:var(--paper);padding:18px;margin-bottom:20px;border-right:5px solid var(--hivis)}
   .today .d{font-size:13px;color:var(--hivis);font-weight:700;font-family:'Rubik';margin-bottom:4px}
@@ -85,7 +85,7 @@
   textarea,input[type=text],select{width:100%;font-family:'Assistant';font-size:16px;padding:11px;border:1.5px solid var(--line);background:#fff;color:var(--petrol);border-radius:0}
   textarea{min-height:84px;resize:vertical}
   textarea:focus,input[type=text]:focus,select:focus{outline:2px solid var(--hivis);border-color:var(--petrol)}
-  .qlab{font-weight:700;margin:14px 0 5px;font-size:16px}
+  .qlab{display:block;font-weight:700;margin:14px 0 5px;font-size:16px}
   button.act{background:var(--petrol);color:var(--paper);border:0;font-family:'Rubik';font-weight:700;font-size:16px;padding:12px 22px;cursor:pointer;margin-top:14px}
   button.act:active{background:var(--petrol2)}
   button.ghost{background:none;border:1.5px solid var(--line);color:var(--petrol2);font-family:'Rubik';font-weight:700;font-size:14px;padding:7px 13px;cursor:pointer}
@@ -108,7 +108,7 @@
   .doc .acts a,.doc .acts button{font-family:'Rubik';font-weight:700;font-size:13px;padding:5px 10px;border:1.5px solid var(--line);background:none;color:var(--petrol2);cursor:pointer;text-decoration:none;text-align:center}
   .doc .acts button.del{color:var(--signal);border-color:#EBC7BB}
 
-  .sos{background:var(--signal);color:#fff;padding:16px;margin-bottom:18px;border-right:5px solid #8F2F14}
+  .sos{background:var(--signal-ink);color:#fff;padding:16px;margin-bottom:18px;border-right:5px solid #8F2F14}
   .sos .n{font-family:'Rubik';font-weight:900;font-size:40px;line-height:1}
   .sos p{margin:6px 0 0;font-size:16px}
   .fields label{display:block;font-weight:700;font-size:15px;margin:12px 0 4px}
@@ -118,7 +118,6 @@
   .places a{background:var(--paper2);border:1px solid var(--line);color:var(--petrol);text-decoration:none;font-size:14px;font-weight:600;padding:5px 10px;line-height:1.35}
   .places a:hover,.places a:focus-visible{border-color:var(--hivis);outline:none}
   .today .places a{background:#1B4450;border-color:#2C5866;color:var(--paper)}
-  .places a::before{content:'\2197\00a0';color:var(--slate);font-weight:400}
   .today .places a::before{color:var(--hivis)}
 
   /* guide: collapsed by default, because 300 lines on a phone is a wall */
@@ -181,7 +180,7 @@
   <h2>מסמכים</h2>
   <p class="note">דרכון, ESTA, ביטוח, כרטיסי טיסה. הקבצים נשמרים במכשיר הזה בלבד ולא נשלחים לשום מקום.</p>
   <div class="drop">
-    <div class="qlab" style="margin-top:0">סוג המסמך</div>
+    <label class="qlab" style="margin-top:0" for="docLabel">סוג המסמך</label>
     <select id="docLabel">
       <option>דרכון</option>
       <option>אישור ESTA</option>
@@ -216,7 +215,8 @@
     <h2>Deckhand: הליבה</h2>
     <p>המספרים כבר מגיעים אליו. מספרי מכולה ומספרי משלוח נוחתים במייל, ואז מישהו קורא אותם מהמסך ומקליד אותם שוב ל-INTTRA ול-ACE. זו העבודה שהמערכת אמורה למחוק, וזה מה שהופך את Tidelane למוצר ולא לעוד מסך.</p>
     <p>Deckhand הוא החלק שעושה את זה: קורא את המייל, מוציא את המספרים, ומביא אותם ליעד בלי שאף אחד יקליד אותם מחדש.</p>
-    <p class="note">איך בדיוק המספרים מגיעים ליעד עוד לא הוכרע: אוטומציה על הממשק, אינטגרציה, או הוצאה נקייה שאדם מדביק. ההחלטה נופלת אחרי שרואים את המיילים האמיתיים ב-24.9, לא לפני.</p>
+    <p>v0 כבר בנוי ונוחת אצלו ב-25.9: הוצאה בלבד, מייל נכנס וגוש מוכן להדבקה יוצא, בלי שום אוטומציה על הדפדפן. הוא מריץ אותו על מיילים אמיתיים באותו אחר צהריים.</p>
+    <p class="note">מה שעוד לא הוכרע הוא v1, השלב שבו הדפדפן נעזר. ההחלטה נופלת מהמספרים שנמדדים ב-24.9, כמה הזמנות ביום וכמה דקות כל אחת, ולא לפני. v2, קליטה עצמאית מהתיבה, נשאר מחוץ לגבולות הביקור.</p>
     <div class="warn"><b>זו לא אינטגרציה חיה.</b> גישה אמיתית ל-ACE ול-INTTRA היא הסכם ספק ונשארת מחוץ לגבולות. Deckhand חוסך את ההקלדה ולא מבקש רשות מאף ספק.</div>
   </div>
 
@@ -224,7 +224,7 @@
     <h2>מה קיים באמת</h2>
     <table>
       <tr><td class="day">נתונים</td><td>זרועים. 18 ארגונים, 7 משתמשים, 42 משלוחים, אף אחד מהם לא שלו</td></tr>
-      <tr><td class="day">חשבונות</td><td>שבעה חשבונות דמו עם סיסמה משותפת, מופיעים בדף שנקרא לפני התחברות</td></tr>
+      <tr><td class="day">חשבונות</td><td>שבעה חשבונות חולקים סיסמת דמו אחת, ומופיעים בדף שנקרא לפני התחברות. שלושת החשבונות הפנימיים כבר נושאים כתובות אמיתיות, כך שכתובת אמיתית יושבת מאחורי סיסמה משותפת</td></tr>
       <tr><td class="day">QuickBooks</td><td>אמיתי. OAuth, משיכת חשבוניות, קישור למשלוח. זה מה שיכול לעלות לאוויר</td></tr>
       <tr><td class="day">ACE ו-INTTRA</td><td>מוק בלבד. הממפים החיים זורקים not implemented במכוון. Deckhand לא תלוי בהם; הוא עובד על מה שמגיע במייל</td></tr>
       <tr><td class="day">אחסון</td><td>רץ על חשבון Cloudflare שלי, תחת הסאב-דומיין שלי</td></tr>
@@ -237,9 +237,9 @@
     <table>
       <tr><th>יום</th><th>מטרה</th></tr>
       <tr><td class="day">ה׳ 24.9</td><td>צפייה בלבד. Tidelane לא נפתחת. רוצה לראות את העבודה לפני שאני רואה את התוכנה. במיוחד: מאיפה מגיעים מספרי המכולה והמשלוח, ומי מקליד אותם לאן. עם סטופר.</td></tr>
-      <tr><td class="day">ו׳ 25.9</td><td>המסך מול הרשומות האמיתיות. כל שדה חסר, שגוי, או כזה שהוא לעולם לא ימלא.</td></tr>
-      <tr><td class="day">ש׳ 26.9</td><td>Deckhand. מייל אמיתי אחד נכנס, המספרים יוצאים ממנו נכונים, ואף אחד לא מקליד אותם מחדש.</td></tr>
-      <tr><td class="day">א׳ 27.9</td><td>חריגים. גלגול לאונייה הבאה, מכולה מפוצלת, תיקון הזמנה, דמורג׳. כאן מתברר אם המודל שורד.</td></tr>
+      <tr><td class="day">ו׳ 25.9</td><td>Deckhand v0 בידיים שלו, באותו בוקר. הוצאה בלבד, בלי דפדפן. אחר הצהריים הוא מריץ אותו על מיילים אמיתיים משלו.</td></tr>
+      <tr><td class="day">ש׳ 26.9</td><td>מחסנים את v0 מול המיילים המכוערים שבתיבה האמיתית שלו. מהמספרים של סשן 1 מחליטים אם v1 מוצדק בכלל.</td></tr>
+      <tr><td class="day">א׳ 27.9</td><td>המסך מול הרשומות האמיתיות, וחריגים. גלגול לאונייה הבאה, מכולה מפוצלת, תיקון הזמנה, דמורג׳. כאן מתברר אם המודל שורד.</td></tr>
       <tr><td class="day">ב׳ 28.9</td><td>חמישה עד עשרה משלוחים אמיתיים נכנסים. מפסיקים להסתכל על נתונים זרועים.</td></tr>
       <tr><td class="day">ג׳ 29.9</td><td>QuickBooks על החברה האמיתית שלו. משיכה, התאמה מול משלוח אמיתי.</td></tr>
       <tr><td class="day">ד׳ 30.9</td><td>מסירה. הוא פותח משלוח, מאשר מסמך, ומריץ מייל אחד דרך Deckhand לבד, בחשבון שלו.</td></tr>
@@ -259,18 +259,19 @@
     <h2>לפני שנתון אמיתי אחד נכנס</h2>
     <div class="prog"><i id="prog_sec"></i></div>
     <div id="ck_sec"></div>
+    <p class="note">נסגר כבר: <span id="secDone"></span></p>
   </div>
 
   <div class="blk">
     <h2>יומן סשן</h2>
     <p class="note">למלא בסוף כל בוקר, לא בערב.</p>
-    <div class="qlab">מה ראיתי (יבש, בלי פרשנות)</div><textarea id="s1"></textarea>
-    <div class="qlab">שדות במודל שחסרים, שגויים או לא בשימוש</div><textarea id="s2"></textarea>
-    <div class="qlab">חריגים: "בדרך כלל, חוץ מ..."</div><textarea id="s3"></textarea>
-    <div class="qlab">החלטות שיגאל מקבל והמערכת לא יודעת לקבל</div><textarea id="s4"></textarea>
-    <div class="qlab">מה נכנס לרשימת ההמתנה ולא נבנה</div><textarea id="s5"></textarea>
-    <div class="qlab">פריט אבטחה או בעלות שנסגר היום</div><textarea id="s6"></textarea>
-    <div class="qlab">ביטחון שנעמוד בהגדרת הסיום (1 עד 5)</div><textarea id="s7" style="min-height:44px"></textarea>
+    <label class="qlab" for="s1">מה ראיתי (יבש, בלי פרשנות)</label><textarea id="s1"></textarea>
+    <label class="qlab" for="s2">שדות במודל שחסרים, שגויים או לא בשימוש</label><textarea id="s2"></textarea>
+    <label class="qlab" for="s3">חריגים: "בדרך כלל, חוץ מ..."</label><textarea id="s3"></textarea>
+    <label class="qlab" for="s4">החלטות שיגאל מקבל והמערכת לא יודעת לקבל</label><textarea id="s4"></textarea>
+    <label class="qlab" for="s5">מה נכנס לרשימת ההמתנה ולא נבנה</label><textarea id="s5"></textarea>
+    <label class="qlab" for="s6">פריט אבטחה או בעלות שנסגר היום</label><textarea id="s6"></textarea>
+    <label class="qlab" for="s7">ביטחון שנעמוד בהגדרת הסיום (1 עד 5)</label><textarea id="s7" style="min-height:44px"></textarea>
     <button class="act" id="saveSession">שמור סשן</button><span class="saved" id="savedSession"></span>
     <div id="sessionEntries"></div>
   </div>
@@ -291,6 +292,29 @@
       <pre class="code">login  &#8594;  new booking  &#8594;  tracking  &#8594;  documents
       &#8594;  collaboration  &#8594;  invoicing  &#8594;  analytics</pre>
       <p class="note">כלל אצבע לעבודה יומית: מתחילים מהחריגים, לא מרשימת כל המשלוחים.</p>
+    </div></details>
+
+    <details class="g"><summary>Deckhand · להפסיק להקליד מזהים מחדש</summary><div class="bd">
+      <p>לפני כל השאר יש שלב אחד שהמערכת לא עשתה עד היום: מזהי משלוח ומספרי חותם מגיעים במייל, ומישהו מקליד אותם מחדש לתוך INTTRA. <b>Deckhand</b> הוא העמוד שמסיר בדיוק את ההקלדה הזאת.</p>
+      <p>השם הוא ההסבר: deckhand הוא איש הצוות הזוטר שעושה את עבודת הסיפון השגרתית כדי שהקצינים יוכלו לנווט. <b>Deckhand מעתיק, אתם שופטים.</b></p>
+      <p class="grp">איך משתמשים</p>
+      <ol class="rules">
+        <li>מדביקים את גוף המייל בתיבה, או מצרפים את המסמך, הודעת הגעה, אישור הזמנה, שטר מטען או רשימת קונטיינרים, כ-PDF, JPEG או PNG, עד 5MB.</li>
+        <li>לוחצים <span dir="ltr">Extract</span>.</li>
+        <li><b>קוראים את הבלוק מול המייל המקורי.</b> זה לא עיכוב, זה המוצר.</li>
+        <li>מעתיקים שדה שדה, או את הבלוק כולו, לטופס.</li>
+      </ol>
+      <p><b>מה חוזר:</b> מספר הזמנה או משלוח, מספרי קונטיינרים, מספרי חותם צמודים לקונטיינר שלידו הם הופיעו, שם אונייה ומספר הפלגה, נמלי טעינה ופריקה, ורשימה מפורשת של כל מה ש-Deckhand לא היה בטוח בו.</p>
+      <p class="grp">הכללים שהוא עובד לפיהם</p>
+      <ul class="dot">
+        <li><b>הוא לא מנחש התאמה.</b> קונטיינר וחותם מחוברים זה לזה רק אם המסמך הראה אותם יחד: אותה שורה בטבלה, אותה שורת טקסט, או אותה פסקה. כל השאר מדווח בנפרד תחת <b>לא מותאם</b>, עם אזהרה. חותם על הקונטיינר הלא נכון גרוע יותר מאשר שום פלט.</li>
+        <li><b>חסר הוא ערך.</b> שדה שלא נמצא מודפס כ-<span dir="ltr">missing</span>, אף פעם לא נעלם בשקט.</li>
+        <li><b>רמת ודאות היא לכל שדה בנפרד</b>, לא ציון אחד כולל.</li>
+        <li><b>מספרי קונטיינר נבדקים מול <span dir="ltr">ISO 6346</span>.</b> ספרת ביקורת שנכשלת מסומנת בקול ולעולם לא מתוקנת בשקט. למספרי חותם אין תקן ואין ספרת ביקורת, ולכן אי אפשר לאמת אותם בכלל, והעמוד אומר את זה.</li>
+        <li><b>שום דבר לא נשמר.</b> Deckhand קורא, מחזיר, ושוכח. הוא לא קורא מבסיס הנתונים ולא כותב אליו.</li>
+        <li><b>לעולם לא סיסמאות פורטל.</b> Deckhand לא מתחבר ל-INTTRA, ל-ACE או ל-<span dir="ltr">Login.gov</span>, ולא יתחבר. הוא מגיש לכם טקסט; אתם מפעילים את הפורטל.</li>
+      </ul>
+      <p class="note">הרשאות: משתמשי <span dir="ltr">admin</span> ו-<span dir="ltr">ops</span> של הארגון הפנימי בלבד. אם לא הוגדר מפתח לשירות החילוץ בפריסה, Deckhand נופל לקורא דטרמיניסטי שמטפל בטקסט בלבד, וקבצי PDF ותמונות יחזירו הודעה שמבקשת להדביק את הטקסט במקום.</p>
     </div></details>
 
     <details class="g"><summary>שלב 0 · מי אתם במערכת</summary><div class="bd">
@@ -739,11 +763,11 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
 <section id="t_log">
   <h2>יומן</h2>
   <p class="note">שתי דקות בסוף כל בוקר. בעוד שנה זה יהיה הדבר היחיד שיישאר מהטיול הזה.</p>
-  <div class="qlab">מה יגאל עשה היום? יבש, בלי פרשנות</div><textarea id="b1"></textarea>
-  <div class="qlab">מה עצבן אותו, או לקח לו יותר מדי זמן?</div><textarea id="b2"></textarea>
-  <div class="qlab">מילה או מונח חדש שלא הכרתי</div><textarea id="b3"></textarea>
-  <div class="qlab">רעיון אחד שאני לוקח לעסק שלי</div><textarea id="b4"></textarea>
-  <div class="qlab">הכי כיף היום</div><textarea id="b5"></textarea>
+  <label class="qlab" for="b1">מה יגאל עשה היום? יבש, בלי פרשנות</label><textarea id="b1"></textarea>
+  <label class="qlab" for="b2">מה עצבן אותו, או לקח לו יותר מדי זמן?</label><textarea id="b2"></textarea>
+  <label class="qlab" for="b3">מילה או מונח חדש שלא הכרתי</label><textarea id="b3"></textarea>
+  <label class="qlab" for="b4">רעיון אחד שאני לוקח לעסק שלי</label><textarea id="b4"></textarea>
+  <label class="qlab" for="b5">הכי כיף היום</label><textarea id="b5"></textarea>
   <button class="act" id="saveBen">שמור רשומה</button><span class="saved" id="savedBen"></span>
   <div id="benEntries"></div>
 </section>
@@ -761,12 +785,12 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
 
   <div class="blk fields">
     <h2>מספרים למלא לפני הטיסה</h2>
-    <label>הטלפון של אבא</label><input type="text" id="f1">
-    <label>הטלפון של יגאל</label><input type="text" id="f2">
-    <label>טלפון נוסף במשפחה</label><input type="text" id="f3">
-    <label>ביטוח נסיעות: מספר פוליסה וטלפון חירום</label><input type="text" id="f4">
-    <label>מספר הדרכון שלי</label><input type="text" id="f5">
-    <label>חברת השכרת הרכב וטלפון</label><input type="text" id="f6">
+    <label for="f1">הטלפון של אבא</label><input type="text" id="f1">
+    <label for="f2">הטלפון של יגאל</label><input type="text" id="f2">
+    <label for="f3">טלפון נוסף במשפחה</label><input type="text" id="f3">
+    <label for="f4">ביטוח נסיעות: מספר פוליסה וטלפון חירום</label><input type="text" id="f4">
+    <label for="f5">מספר הדרכון שלי</label><input type="text" id="f5">
+    <label for="f6">חברת השכרת הרכב וטלפון</label><input type="text" id="f6">
     <button class="act" id="saveF">שמור</button><span class="saved" id="savedF"></span>
   </div>
 
@@ -820,36 +844,28 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
   function key(k){ return 'trip:'+USER+':'+k; }
 
   /* ---------- data ---------- */
-  var DAYS = [
-    {d:'2026-09-23', t:'טסים', am:'06:00 המראה מנתב״ג. עצירה של שעה ועשר בווינה.', pm:'נוחתים ב-LAX ב-13:05, רכב, סופר, שלום ליגאל', n:'אסור לישון אחרי הצהריים. להחזיק מעמד עד 20:00.', pl:[{n:'LAX',q:'Los Angeles International Airport'},{n:'הבסיס',q:'117 S Doheny Dr, Los Angeles, CA 90048'},{n:'יגאל',q:'411 N Oakhurst Dr, Beverly Hills, CA 90210'}]},
-    {d:'2026-09-24', t:'סשן 1 · רק לצפות', am:'07:00 אצל יגאל. Tidelane לא נפתחת.', pm:'מוזיאון הרכב של פטרסן', n:'בלי שאלות היום. רק עיניים. ולתזמן כמה זמן לוקח להקליד מספרים מהמייל.', pl:[{n:'יגאל',q:'411 N Oakhurst Dr, Beverly Hills, CA 90210'},{n:'מוזיאון פטרסן',q:'Petersen Automotive Museum, Los Angeles'}]},
-    {d:'2026-09-25', t:'סשן 2 · המסך מול המציאות', am:'07:00 אצל יגאל', pm:'בורות הזפת של לה בריאה ומוזיאון LACMA', n:'ערב חג ראשון של סוכות', pl:[{n:'יגאל',q:'411 N Oakhurst Dr, Beverly Hills, CA 90210'},{n:'בורות הזפת',q:'La Brea Tar Pits, Los Angeles'},{n:'LACMA',q:'Los Angeles County Museum of Art'}]},
-    {d:'2026-09-26', t:'סשן 3 · Deckhand', am:'07:00 אצל יגאל', pm:'מזח סנטה מוניקה וחוף וניס', n:'מייל אמיתי אחד נכנס, המספרים יוצאים ממנו נכונים.', pl:[{n:'יגאל',q:'411 N Oakhurst Dr, Beverly Hills, CA 90210'},{n:'מזח סנטה מוניקה',q:'Santa Monica Pier'},{n:'חוף וניס',q:'Venice Beach, Los Angeles'}]},
-    {d:'2026-09-27', t:'סשן 4 · חריגים', am:'07:00 אצל יגאל', pm:'מוזיאון גטי, או חוף זומה אם חם', n:'הבוקר הכי חשוב בשבוע. כל "חוץ מ" נרשם.', pl:[{n:'יגאל',q:'411 N Oakhurst Dr, Beverly Hills, CA 90210'},{n:'מוזיאון גטי',q:'Getty Center, Los Angeles'},{n:'חוף זומה',q:'Zuma Beach, Malibu'}]},
-    {d:'2026-09-28', t:'סשן 5 · נתונים אמיתיים', am:'07:00 אצל יגאל', pm:'מרכז המדע של קליפורניה, מעבורת אנדוור', n:'כרטיסים מראש', pl:[{n:'יגאל',q:'411 N Oakhurst Dr, Beverly Hills, CA 90210'},{n:'מרכז המדע',q:'California Science Center, Los Angeles'}]},
-    {d:'2026-09-29', t:'סשן 6 · QuickBooks חי', am:'07:00 אצל יגאל', pm:'מלרוז, ואז מצפה גריפית בשקיעה', n:'', pl:[{n:'יגאל',q:'411 N Oakhurst Dr, Beverly Hills, CA 90210'},{n:'מלרוז',q:'Melrose Avenue, Los Angeles'},{n:'מצפה גריפית',q:'Griffith Observatory, Los Angeles'}]},
-    {d:'2026-09-30', t:'סשן 7 · מסירה', am:'07:00 אצל יגאל. הבוקר שהכול מתנקז אליו.', pm:'כביש החוף למאליבו', n:'אם הבוקר לא הצליח, מבטלים את אחר הצהריים ומתקנים.', pl:[{n:'יגאל',q:'411 N Oakhurst Dr, Beverly Hills, CA 90210'},{n:'מאליבו',q:'Malibu, California'}]},
-    {d:'2026-10-01', t:'יום חופשי מלא', am:'יוניברסל סטודיוס', pm:'יוניברסל סטודיוס', n:'לצאת מהפארק לפני שיורד הלילה', pl:[{n:'יוניברסל',q:'Universal Studios Hollywood'}]},
-    {d:'2026-10-02', t:'רזרבה · צדדים והרשאות + המשימה של בן', am:'07:00 צדדים והרשאות, ואז תיקונים, חשבונות דמו, מפתח הצפנה', pm:'סנטה מוניקה ווניס: שלושה עסקים, באנגלית', n:'', pl:[{n:'מזח סנטה מוניקה',q:'Santa Monica Pier'},{n:'חוף וניס',q:'Venice Beach, Los Angeles'}]},
-    {d:'2026-10-03', t:'רזרבה · סגירה והעברת בעלות', am:'נהלים, ובמסלול א׳ גם Cloudflare, D1 ו-Intuit על שמו', pm:'הוליווד בולוורד, או רניון קניון', n:'היום האחרון שאפשר לתקן בו משהו', pl:[{n:'הוליווד בולוורד',q:'Hollywood Boulevard, Los Angeles'},{n:'רניון קניון',q:'Runyon Canyon Park, Los Angeles'}]},
-    {d:'2026-10-04', t:'יום חופשי מלא', am:'סיקס פלאגס מג׳יק מאונטן', pm:'סיקס פלאגס מג׳יק מאונטן', n:'בערב ארוחה אחרונה עם יגאל', pl:[{n:'סיקס פלאגס',q:'Six Flags Magic Mountain, Valencia CA'}]},
-    {d:'2026-10-05', t:'טסים הביתה', am:'אורזים, מחזירים רכב, בשדה ב-12:00', pm:'המראה 15:05, עצירה בפרנקפורט', n:'נוחתים בתל אביב ג׳ 6.10 ב-19:15', pl:[{n:'LAX',q:'Los Angeles International Airport'}]}
-  ];
+  /* Substituted by the Worker from src/days.js, the one place a day is
+     edited; the guest page renders the same array. */
+  var DAYS = %%DAYS%%;
 
   var LISTS = {
-    dod: ['ליגאל חשבון admin משלו עם סיסמה משלו, ושבעת חשבונות הדמו נמחקו',
+    dod: ['ליגאל חשבון admin משלו עם סיסמה משלו, וארבעת חשבונות השותפים שמסתיימים ב-demo נמחקו',
           'Deckhand רץ על מייל אמיתי אחד מקצה לקצה, והמספרים שיצאו ממנו נבדקו מול המקור',
           'לפחות חמישה משלוחים אמיתיים במסד עם הצדדים האמיתיים שלהם',
           'QuickBooks מחובר חי לחברה האמיתית, ומשיכה אחת מתאימה למשלוח אמיתי',
           'הוא ביצע הזמנה אחת ואישור מסמך אחד לבד, בזמן שאני צופה',
           'רשם חריגים כתוב, כל שורה מסומנת: טופל, מחוץ לגבולות, או פתוח',
           'דף נהלים אחד: הוספת משתמש, כשל בדיפלוי, מיגרציות לפני push, ומה קורה כשמסובבים את מפתח ההצפנה'],
-    sec: ['סיסמת הדמו המשותפת ושבעת חשבונות ה-demo הוסרו',
+    sec: ['סיסמת הדמו המשותפת הוסרה משלושת החשבונות הפנימיים, שכבר נושאים כתובות אמיתיות',
+          'ארבעת חשבונות השותפים שמסתיימים ב-demo נמחקו',
           'דף המדריך שנקרא לפני התחברות רוקן או נסגר',
           'מפתח הצפנה ראשי נוצר, נשמר לא רק במחשב שלי, ומוכר לעוד אדם אחד',
           'חשבון Cloudflare, הוורקר, מסד D1 ואפליקציית Intuit עברו לשמו (מסלול א׳ בלבד)',
-          'שגרת ייצוא של מסד הנתונים. היום אין שום גיבוי',
+          'שגרת הייצוא של מסד הנתונים נכתבה ומסלול השחזור נבדק; מה שנשאר הוא להריץ אותה על הנתונים שלו ולהחליט איפה הגיבוי יושב',
           'דומיין משלו במקום סאב-דומיין של workers.dev'],
+    /* Closed already, kept visible so the list is the whole picture and not
+       only what is left. */
+    secDone: ['כתובות התצוגה המקדימה של Cloudflare כובו, כך שבנייה של ענף לא מפרסמת עוד כתובת ציבורית שנייה אל מסד הנתונים החי'],
     ask: ['עשרה משלוחים אמיתיים שלו, מתחילתם ועד סופם, בכל צורה שהם קיימים',
           'עשרה מיילים אמיתיים עם מספרי מכולה ומשלוח, בדיוק כמו שהם מגיעים אליו',
           'רשימת חברות הספנות, השולחים, הנמענים והמשלחים, ואילו מסלולים הוא באמת מריץ',
@@ -924,6 +940,11 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
   }
 
   /* ---------- journals ---------- */
+  /* Journals are wired once at parse time, but the user is only known after the
+     Worker's identity reaches setUser. Loading here would read trip:null:... and
+     quietly show an empty journal over entries that were saved under the real
+     key, so each journal registers its loader and setUser runs them. */
+  var JOURNAL_LOADERS = [];
   function wireJournal(ids, labels, btnId, msgId, listId, storeKey, emptyMsg){
     var entries=[], listEl=document.getElementById(listId);
     function render(){
@@ -933,7 +954,12 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
         return '<div class="entry"><div class="dt">'+pretty(e.date)+'</div>'+body+'</div>';
       }).join('');
     }
-    (async function(){ var raw=await store.get(key(storeKey)); if(raw){ try{entries=JSON.parse(raw)||[];}catch(e){} } render(); })();
+    JOURNAL_LOADERS.push(async function(){
+      var raw=await store.get(key(storeKey));
+      if(raw){ try{entries=JSON.parse(raw)||[];}catch(e){} }
+      render();
+    });
+    render();
     document.getElementById(btnId).addEventListener('click', async function(){
       var e={date:today()}, any=false;
       ids.forEach(function(q){ var v=document.getElementById(q).value.trim(); e[q]=v; if(v) any=true; });
@@ -1055,11 +1081,15 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
   /* Map handoff. The app never draws a map itself: it has no network budget for
      tiles and must work offline, so it opens the phone's own map app, which is
      where the offline LA maps already live. */
-  function mapUrl(q){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q); }
+  /* A coordinate when we have one, because it drops the pin on the exact spot;
+     "Malibu" as text is a whole city. The two home addresses carry no ll and
+     fall back to the verbatim address, which geocodes more precisely than any
+     coordinate typed by hand. */
+  function mapUrl(p){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.ll || p.q); }
   function placesHtml(list){
     if(!list || !list.length) return '';
     return '<div class="places">'+list.map(function(p){
-      return '<a href="'+mapUrl(p.q)+'" target="_blank" rel="noopener noreferrer">'+esc(p.n)+'</a>';
+      return '<a href="'+mapUrl(p)+'" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">\uD83D\uDCCC</span> '+esc(p.n)+'</a>';
     }).join('')+'</div>';
   }
 
@@ -1111,9 +1141,11 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
     renderToday();
     await loadFields();
     await loadDocs();
+    for(var j=0;j<JOURNAL_LOADERS.length;j++){ await JOURNAL_LOADERS[j](); }
     if(u==='effi'){
       buildFlat('ck_dod','prog_dod',LISTS.dod,'ck:dod');
       buildFlat('ck_sec','prog_sec',LISTS.sec,'ck:sec');
+      document.getElementById('secDone').textContent = LISTS.secDone.join('; ') + '.';
       buildFlat('ck_ask','prog_ask',LISTS.ask,'ck:ask');
       buildFlat('ck_pre_effi','prog_pre_effi',LISTS.pre_effi,'ck:pre');
     } else {

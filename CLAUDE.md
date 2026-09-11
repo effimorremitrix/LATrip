@@ -18,6 +18,11 @@ The app is served behind a per-user password gate. The Worker verifies the passw
 
 **Ben** — 14, owns a small AI website-building business, is on the trip to learn. His tabs: היום, לפני, העבודה, המשימה, אנגלית, יומן, טיסות, מסמכים, חירום.
 
+**Guest** — a third, read-only account behind a shared password, for family and friends who
+want to know where we are. It gets its own template, `src/guest.html`: the itinerary
+side by side with map pins, the flight times, and the base address. Nothing else. See
+The guest view below.
+
 All state is scoped per user: `trip:<user>:<key>`. Switching users must never leak one person's checklist, journal or documents into the other's view.
 
 ## Hard rules
@@ -67,7 +72,8 @@ modules and served from it.
 |---|---|
 | `GET /` without a valid cookie | login page only; no trip content in the response |
 | `POST /api/login` | password checked against a Cloudflare secret, sets the session cookie |
-| `GET /` with a valid cookie | app, with the verified user substituted into `%%TRIP_USER%%` |
+| `GET /` with a valid cookie | app, with the verified user substituted into `%%TRIP_USER%%`, and the itinerary into `%%DAYS%%` |
+| `GET /` with a valid `guest` cookie | `src/guest.html`, with the guest projection of the itinerary |
 | `POST /api/logout` | clears the cookie; this is the יציאה button in the header |
 | `GET /version` | no login needed; the commit this deploy was built from |
 
@@ -81,8 +87,11 @@ The cookie is `user.expiry.HMAC-SHA256(user.expiry, AUTH_SECRET)`, HttpOnly,
 Secure, SameSite=Lax, thirty days. Editing any field breaks the signature, so a
 `ben` session cannot be rewritten into an `effi` one.
 
-Three secrets live in Cloudflare and never in git: `AUTH_SECRET`,
-`PASSWORD_EFFI`, `PASSWORD_BEN`. Set or rotate them with `npm run setup`.
+Secrets live in Cloudflare and never in git: `AUTH_SECRET`, `PASSWORD_EFFI`,
+`PASSWORD_BEN`, and the optional `PASSWORD_GUEST`. Set or rotate them with `npm run setup`.
+`PASSWORD_GUEST` is deliberately **not** in the missing-secret check: adding it there
+would take the whole app down the moment this deployed and before the secret existed.
+Unset, guest logins are refused and the other two accounts carry on. Keep it that way.
 `wrangler secret put` is itself a deployment, so nothing needs redeploying
 after. If any secret is missing the Worker returns 503 `not_configured` and
 serves nothing. That is deliberate: an unconfigured deploy is locked, not open.
@@ -111,10 +120,15 @@ Deployment and rotation detail lives in README.md. Do not duplicate it here.
 
 Tidelane is Effi's container shipping product. **Deckhand** is its core: container and
 shipment numbers arrive by email, and today a person retypes them into INTTRA and ACE.
-Deckhand removes that retyping. It is the core deliverable of the two weeks and it owns
-session 3 on 26.9. The mechanism, whether UI automation, a real integration, or clean
-extraction that a human pastes, is deliberately undecided until the real emails are
-seen on 24.9. Do not decide it in copy.
+Deckhand removes that retyping. It is the core deliverable of the two weeks.
+
+**v0 is built** (`28ba223` in the Yigal repo) and lands in Yigal's hands on **25.9,
+session 2**: extraction only, email or attachment in, paste-ready block out, no browser
+automation, nothing stored, and never a portal password. Session 3 on 26.9 hardens it
+against the ugly emails in his real inbox. What is still undecided is **v1**, the
+browser-assist step, and that decision comes from the numbers counted in session 1 on
+24.9, not before. **v2**, autonomous inbox intake, stays out of bounds for the visit.
+Do not write copy that decides v1.
 
 Deckhand is **not** live ACE and INTTRA integration. That stays mocked and out of
 bounds, because real access is a vendor agreement and not code. The app draws that line
@@ -141,7 +155,7 @@ the system, and how to develop and deploy it. It is a **copy**, not the source. 
 source of truth is `docs/workflow-guide.he.md` in the Yigal repo
 (`effimorremitrix/yigal`). When that file changes, this tab does not; re-sync it
 deliberately rather than editing the copy and letting the two drift apart. It is
-collapsed into `<details>` sections because 293 lines of guide on a phone is a wall of
+collapsed into `<details>` sections because 325 lines of guide on a phone is a wall of
 text, and the sections open one at a time.
 
 **The map is not a map.** The היום tab renders each day's places as chips that link out
@@ -152,10 +166,43 @@ has him downloading offline LA maps, so the phone's map app is the map. Adding a
 embedded tile map would mean opening the CSP for an external script and tile server, a
 request on every pan, and a blank rectangle when offline. Do not do it.
 
-Place data lives in the `pl:` array on each `DAYS` entry in `src/app.html`, as
-`{n: 'Hebrew label', q: 'search query'}`. Queries are English for US landmarks because
-map apps resolve those far more reliably; the label the user sees stays Hebrew. The two
-fixed addresses come from Trip facts above and are quoted verbatim.
+**The itinerary lives in `src/days.js`**, not in either page. The Worker substitutes it
+into `%%DAYS%%` in whichever template it is serving, so a day is edited in one place and
+the app and the guest view cannot drift apart.
+
+Place data is the `pl:` array on each `DAYS` entry, as
+`{n: 'Hebrew label', q: 'search query', ll: 'lat,lng'}`. Queries are English for US
+landmarks because map apps resolve those far more reliably; the label the user sees stays
+Hebrew. `ll` is preferred over `q` when present, because it pins the exact spot: "Malibu"
+as text is a whole city. The two fixed addresses deliberately carry **no** `ll`; a
+verbatim street address geocodes more precisely than a coordinate typed by hand. They
+come from Trip facts above and are quoted verbatim.
+
+## The guest view
+
+`src/guest.html`, served only to a `guest` session. Three things make it safe, and all
+three must stay:
+
+1. **It is a separate template, not the app with tabs hidden.** Tab filtering happens in
+   the browser, so an `app.html` served to a guest would carry Effi's commercial notes and
+   Ben's journal in the page source. The guest password is shared; View Source is not a
+   threat model you get to ignore.
+2. **The guest itinerary is projected in the Worker, not filtered in the page.** A page
+   that renders `gt` but is handed `t` has hidden nothing. `GUEST_DAYS` in `src/index.js`
+   rebuilds each day from `gt`/`gam`/`gpm` and drops `n`, so the working mornings never
+   reach the response at all. If you add a field to a day, decide whether a guest may see
+   it, and add it to that projection or leave it out.
+3. **It shows the flight times, never the booking code, the passenger names or the
+   USD 4,427.20.** The guest page holds no checklist, no journal and no vault, and writes
+   nothing to storage.
+
+The working mornings are a handover of someone else's freight business. Session numbering,
+Deckhand, QuickBooks and the ownership transfer are Yigal's business, so a guest sees
+`בוקר עבודה` and the afternoon plan. Ben's `שלושה עסקים` mission is likewise hidden behind
+`gpm`; he is 14 and his personal challenge is not semi-public.
+
+Verify a change here by logging in as guest and grepping the response body, not by looking
+at the rendered page.
 
 ## Content that must stay accurate
 
