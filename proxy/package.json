@@ -1,0 +1,15 @@
+{
+  "name": "ben-la-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serves the LA Trip Companion at benmor2026.com/la, proxied from the LATrip Worker in another Cloudflare account",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^4.130.0"
+  }
+}

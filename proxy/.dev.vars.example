@@ -1,0 +1,3 @@
+# Copy to .dev.vars to point `wrangler dev` at a local LATrip.
+# Never set in production; the constant in src/index.js is what runs there.
+ORIGIN=http://127.0.0.1:8787

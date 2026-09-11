@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="theme-color" content="#0F2A33">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230F2A33'/%3E%3Ccircle cx='16' cy='13' r='7' fill='%23F2C230'/%3E%3Crect y='22' width='32' height='4' fill='%23F2C230'/%3E%3C/svg%3E">
 <title>לוס אנג'לס 2026 · המסלול</title>
 <meta name="description" content="מסלול הנסיעה ללוס אנג'לס, 23 בספטמבר עד 5 באוקטובר 2026, יום אחר יום עם מיקומים על המפה.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -164,8 +167,8 @@
   }).join('');
 
   document.getElementById('out').addEventListener('click', async function(){
-    try{ await fetch('/api/logout',{method:'POST'}); }catch(_){}
-    window.location.replace('/');
+    try{ await fetch('api/logout',{method:'POST'}); }catch(_){}
+    window.location.replace('./');
   });
 })();
 </script>
