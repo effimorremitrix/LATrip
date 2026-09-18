@@ -251,7 +251,7 @@
     <p>Deckhand הוא החלק שעושה את זה: קורא את המייל, מוציא את המספרים, ומביא אותם ליעד בלי שאף אחד יקליד אותם מחדש.</p>
     <p>v0 כבר בנוי ונוחת אצלו ב-25.9: הוצאה בלבד, מייל נכנס וגוש מוכן להדבקה יוצא, בלי שום אוטומציה על הדפדפן. הוא מריץ אותו על מיילים אמיתיים באותו אחר צהריים.</p>
     <p><b>הקליטה דו-צדדית.</b> כי הוא סוחר, המיילים מגיעים משני כיוונים ולא נראים אותו דבר: מצד הקנייה היצרן או המשלח שלו, עם אישור הזמנה ורשימת אריזה; מצד המכירה המוביל או המשלח שלו, עם אישור הזמנה, הודעת הגעה ושטר מטען טיוטה. הגדרת הסיום מדברת על שלושת הפורמטים הנפוצים, וייתכן מאוד שזה שלושה לכל צד, כלומר שישה. לספור את שני הצדדים בנפרד ב-24.9, אחרת v0 נבנה על חצי מהחומר ונראה שבור במייל האמיתי הראשון מהכיוון השני.</p>
-    <p class="note">מה שעוד לא הוכרע הוא v1, השלב שבו הדפדפן נעזר. ההחלטה נופלת מהמספרים שנמדדים ב-24.9, כמה הזמנות ביום וכמה דקות כל אחת, ולא לפני. v2, קליטה עצמאית מהתיבה, נשאר מחוץ לגבולות הביקור.</p>
+    <p class="note">המועמד ל-v1, השלב שבו הדפדפן נעזר, הוא Quickfill Helper מהריפו AceChromExt: תיבת הדבקה אחת בכרום שמקלידה את הבלוק לטופס. בן מדגים אותו ליגאל ב-25.9 מלשונית "הדגמה". אם v1 נבנה בכלל מוחלט מהמספרים שנמדדים ב-24.9, כמה הזמנות ביום וכמה דקות כל אחת, ולא לפני. v2, קליטה עצמאית מהתיבה, נשאר מחוץ לגבולות הביקור.</p>
     <div class="warn"><b>זו לא אינטגרציה חיה.</b> גישה אמיתית ל-ACE ול-INTTRA היא הסכם ספק ונשארת מחוץ לגבולות. Deckhand חוסך את ההקלדה ולא מבקש רשות מאף ספק.</div>
   </div>
 
@@ -272,7 +272,7 @@
     <table>
       <tr><th>יום</th><th>מטרה</th></tr>
       <tr><td class="day">ה׳ 24.9</td><td>צפייה בלבד. Tidelane לא נפתחת. רוצה לראות את העבודה לפני שאני רואה את התוכנה. במיוחד: מאיפה מגיעים מספרי המכולה והמשלוח, ומי מקליד אותם לאן. עם סטופר, <b>וסופרים את צד הקנייה ואת צד המכירה בנפרד</b>. וגם: קונה למלאי או סוגר קונה מראש.</td></tr>
-      <tr><td class="day">ו׳ 25.9</td><td>Deckhand v0 בידיים שלו, באותו בוקר. הוצאה בלבד, בלי דפדפן. אחר הצהריים הוא מריץ אותו על מיילים אמיתיים משלו.</td></tr>
+      <tr><td class="day">ו׳ 25.9</td><td>Deckhand v0 בידיים שלו, באותו בוקר. הוצאה בלבד, בלי דפדפן. בסוף הסשן בן מדגים את Quickfill, המועמד ל-v1, על מייל אמיתי אחד שלו (לשונית "הדגמה"). אחר הצהריים הוא מריץ את v0 על מיילים אמיתיים משלו.</td></tr>
       <tr><td class="day">ש׳ 26.9</td><td>מחסנים את v0 מול המיילים המכוערים שבתיבה האמיתית שלו. מהמספרים של סשן 1 מחליטים אם v1 מוצדק בכלל.</td></tr>
       <tr><td class="day">א׳ 27.9</td><td><b>הכסף, ראשון בתור:</b> האם זה באמת שני אחוזים, האם זה על השווי המלא, ואיפה החריגים. אחר כך אינקוטרם לכל רגל, ציר ספק ולקוח, חבות מול זכאות, והמסך מול הרשומות האמיתיות: גלגול לאונייה הבאה, מכולה מפוצלת, תיקון הזמנה, דמורג׳.</td></tr>
       <tr><td class="day">ב׳ 28.9</td><td>חמישה עד עשרה משלוחים אמיתיים נכנסים, כל אחד עם היצרן שממנו קנה והיבואן שלו מכר. מוודאים את בידוד הצדדים מחשבון שותף לפני שנכנס נתון אחד.</td></tr>
@@ -588,6 +588,194 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
   </div>
 </section>
 
+<!-- ===== SHARED: DEMO (Quickfill for Yigal) =====
+     A Hebrew rendering of docs/QUICKFILL.md sections 5, 5a and 6 and
+     docs/INSTALLATION.md section 3 in effimorremitrix/AceChromExt. It is a
+     copy, not the source: re-sync it deliberately when those change. The
+     quoted email and the three-row block are that repo's test fixtures
+     (tests/fixtures/deckhand/04-booking-confirmation.txt, pinned by
+     tests/inttraContent.test.ts), so Ben's screen matches the text. -->
+<section id="t_demo">
+  <h2>הדגמה: Quickfill ליגאל</h2>
+  <p>בן, זו הלשונית שלך לפגישה. Quickfill הוא תוסף לכרום שאבא בנה: תיבת הדבקה אחת וכפתור אחד. מדביקים בה מייל של חברת ספנות, או שורות מאקסל, והתוסף קורא מהם מספר הזמנה, מכולות וחותמות, ומקליד אותם לטופס שפתוח ב-ACE או ב-INTTRA. בדיוק את ההקלדה שתראה את יגאל עושה מהמסך.</p>
+  <p class="note"><b>האנלוגיה:</b> פקיד שקורא את המייל במקומך וממלא את הטופס בעיפרון. הוא לא חותם, לא שולח ולא מחליט. אתם קוראים את הטופס ולוחצים בעצמכם.</p>
+  <div class="warn"><b>אבא מוביל ואחראי.</b> אתה מראה, לא מבטיח. אם משהו לא עובד מול יגאל, זה מידע ולא כישלון; רושמים מה קרה ומעבירים לאבא. ההדגמה הזאת היא המועמד לשלב v1 של Tidelane, עזרת הדפדפן; אם v1 נבנה בכלל מוחלט מהמספרים של סשן 1, לא מההדגמה.</div>
+  <p class="note">המקור של כל מה שכתוב כאן: <code dir="ltr">docs/QUICKFILL.md</code> ו-<code dir="ltr">docs/INSTALLATION.md</code> בריפו <span dir="ltr">AceChromExt</span>, נכון ל-18.9.2026. אם מסך נראה אחרת ממה שכתוב, המסמך בריפו מנצח.</p>
+
+  <div class="blk">
+    <h2>חלק א׳: התקנה במחשב שלך (Windows)</h2>
+    <p class="note">פעם אחת, לפני הטיסה. לוקח בערך חצי שעה, רובה המתנה.</p>
+
+    <details class="g"><summary>1 · Git, Node ו-Chrome</summary><div class="bd">
+      <p>פותחים PowerShell (לוחצים Start, מקלידים <span dir="ltr">PowerShell</span>, Enter) ומריצים:</p>
+      <pre class="code" tabindex="0">winget install Git.Git
+winget install OpenJS.NodeJS.LTS</pre>
+      <p>אם winget לא קיים במחשב, מורידים ידנית: Git מ-<span dir="ltr">git-scm.com</span>, ו-Node.js בגרסת LTS (20 או 22) מ-<span dir="ltr">nodejs.org</span>. אחרי ההתקנה סוגרים את PowerShell, פותחים מחדש ובודקים:</p>
+      <pre class="code" tabindex="0">git --version
+node --version</pre>
+      <p class="note">Chrome רגיל מספיק; Edge עובד גם. הערת Mac: אותן פקודות ב-Terminal, וההתקנה היא <code dir="ltr">brew install git node</code>.</p>
+    </div></details>
+
+    <details class="g"><summary>2 · לשכפל את הריפו ולבנות</summary><div class="bd">
+      <pre class="code" tabindex="0">cd ~\Documents
+git clone https://github.com/effimorremitrix/AceChromExt.git
+cd AceChromExt
+npm install
+npm run verify</pre>
+      <p>אם <code dir="ltr">git clone</code> מבקש התחברות או מחזיר <span dir="ltr">not found</span>, הריפו פרטי ואבא צריך לתת לך גישה בגיטהאב, או לשלוח לך ZIP של הריפו; אז פותחים את ה-ZIP בתוך Documents וממשיכים מהשורה <code dir="ltr">cd AceChromExt</code>.</p>
+      <p><code dir="ltr">npm run verify</code> מריץ את כל הבדיקות ובונה הכול. זה לוקח כמה דקות, וצריך להיגמר בלי שגיאה. בסוף יש ארבע תיקיות חדשות:</p>
+      <div class="tw" tabindex="0"><table>
+        <tr><th>תיקייה</th><th>מה זה</th></tr>
+        <tr><td><code dir="ltr">dist-quickfill</code></td><td>Quickfill Helper, האייקון הכתום עם Q. זה מה שמדגימים</td></tr>
+        <tr><td><code dir="ltr">dist-quickfill-playground</code></td><td>גרסת תרגול של Quickfill: רואה רק קבצים שנפתחו מהדיסק, לעולם לא פורטל אמיתי</td></tr>
+        <tr><td><code dir="ltr">dist-inttra</code></td><td>INTTRA Helper, הגרסה הזהירה ל-INTTRA, עם Diagnostics</td></tr>
+        <tr><td><code dir="ltr">dist</code></td><td>ACE Helper, הגרסה הזהירה ל-ACE, עם תצוגה מקדימה ועשר בדיקות</td></tr>
+      </table></div>
+      <p class="note">אם verify נכשל: לא לתקן לבד. מעתיקים את כל הפלט ושולחים לאבא. בינתיים אפשר לבנות רק את מה שההדגמה צריכה: <code dir="ltr">npm run build:quickfill</code> ואז <code dir="ltr">npm run build:quickfill:playground</code>.</p>
+    </div></details>
+
+    <details class="g"><summary>3 · לטעון את התוספים לכרום</summary><div class="bd">
+      <ol class="rules">
+        <li>בכרום פותחים את הכתובת <span dir="ltr">chrome://extensions</span>.</li>
+        <li>מדליקים <b>Developer mode</b>, המתג בפינה הימנית העליונה.</li>
+        <li>לוחצים <b>Load unpacked</b> ובוחרים את התיקייה <code dir="ltr">dist-quickfill</code> שבתוך AceChromExt. את התיקייה עצמה, לא את הריפו.</li>
+        <li>חוזרים על זה עם <code dir="ltr">dist-quickfill-playground</code>, עם <code dir="ltr">dist-inttra</code> ועם <code dir="ltr">dist</code>. ארבעה כרטיסים.</li>
+        <li>בכרטיס <b>Quickfill Helper (playground)</b> לוחצים Details ומדליקים <b>Allow access to file URLs</b>. בלי זה התרגול לא רואה דפים שנפתחים מהדיסק.</li>
+        <li>מצמידים את ה-Q הכתום לסרגל: אייקון הפאזל, ואז הסיכה.</li>
+      </ol>
+      <p>בכותרת של כל תוסף כתוב <span dir="ltr">build 0.x.x+commit.time</span>. זו החותמת של התיקייה שכרום טען. אחרי כל <code dir="ltr">npm run verify</code> חדש לוחצים על חץ הרענון בכרטיס ומוודאים שהחותמת השתנתה.</p>
+      <p class="note">ההערה בתיעוד על "Chrome 137 ומעלה לא עובד" נוגעת רק לבדיקה האוטומטית. טעינה ידנית דרך Load unpacked עובדת בכרום רגיל.</p>
+    </div></details>
+  </div>
+
+  <div class="blk">
+    <h2>חלק ב׳: תרגול ACE במחשב שלך</h2>
+    <p class="note">בלי פורטל ובלי חשבון. ארבעת המסכים של ACE יושבים כקבצים בתוך תיקיית התרגול.</p>
+    <details class="g"><summary>למלא את ארבעת השלבים מאקסל</summary><div class="bd">
+      <ol class="rules">
+        <li>פותחים בסייר את <code dir="ltr">AceChromExt\dist-quickfill-playground\playground</code>.</li>
+        <li>פותחים באקסל את <code dir="ltr">ACE_Import_Example.xlsx</code>. גיליון אחד: שורת כותרת ושתי שורות של משלוח שקדים מקליפורניה לחיפה. <span dir="ltr">Ctrl+A</span>, ואז <span dir="ltr">Ctrl+C</span>.</li>
+        <li>גוררים את <code dir="ltr">step1-shipment.html</code> לתוך כרום. נפתח מסך שנראה כמו Step 1 של ACE, עם פס צהוב שאומר שזה תרגול.</li>
+        <li>לוחצים על ה-Q הכתום ומדביקים בתיבה. השורה מתחת צריכה להגיד: <span dir="ltr">Read as: spreadsheet rows · 2 lines</span>.</li>
+        <li>לוחצים <b>Fill this page</b>. השדות מתמלאים ונצבעים. שים לב מה השתנה בדרך: התאריך הפך ל-<span dir="ltr">MM/DD/YYYY</span>, והמשקל בפאונד הפך לקילוגרמים שלמים.</li>
+        <li>עוברים ל-Step 2 ול-Step 4 דרך הלשוניות שבראש הדף, ולוחצים Fill this page בכל אחד.</li>
+        <li>ב-Step 3: <b>Fill line</b> לשורה 1; אחר כך הכפתור <b>Add New Line</b> של הדף עצמו (הוא חיקוי, הוא רק מרוקן את הטופס); בוחרים שורה 2 בתפריט הקטן שליד הכפתור, ושוב <b>Fill line</b>.</li>
+      </ol>
+      <p class="note">מה זה מוכיח: ההדבקה נקראת, הטבלה מוצאת את השדות לפי התוויות שנקראו מהמסך האמיתי, והערכים עוברים המרה. מה זה לא מוכיח: את הפורטל החי. שם התפריטים הנפתחים בנויים אחרת, ומילוי של תפריט כזה עוד לא רץ מולו אף פעם.</p>
+    </div></details>
+  </div>
+
+  <div class="blk">
+    <h2>חלק ג׳: תרגול INTTRA במחשב שלך</h2>
+    <p class="note">זה הלב של ההדגמה, כי זה בדיוק מה שיגאל מקליד היום מהמייל: מספרי מכולה וחותמות לטבלה של Copy Container Details.</p>
+
+    <details class="g"><summary>המייל לדוגמה</summary><div class="bd">
+      <p>מייל אישור הזמנה מנוקה, מתוך הבדיקות של הריפו. שלוש מכולות, שתי דרכים שונות לכתוב חותם, ושורות הסחה. תעתיק אותו כמו שהוא לקובץ טקסט על המחשב, כי תצטרך אותו גם בפגישה.</p>
+      <pre class="code" tabindex="0">Subject: Booking Confirmation EBKG18531408 - MSC FIRENZE 541W
+
+Carrier Booking No: EBKG18531408
+Shipment ID: SID-2026-0042
+Vessel/Voyage: MSC FIRENZE / 541W
+POL: Los Angeles, CA
+POD: Derince
+
+Container No.     Carrier Seal     Shipper Seal
+MSCU1234566       SL-4471209       SH-001
+MSDU7654322       SL-4471210
+
+Container 3: TGHU7654320
+Seal: SL-9
+
+Please note that MSCU1234566 is the reefer unit on this booking.
+
+Spare seals: SL-99001, SL-99002</pre>
+      <p class="note">הקובץ המקורי בריפו: <code dir="ltr">tests\fixtures\deckhand\04-booking-confirmation.txt</code>.</p>
+    </div></details>
+
+    <details class="g"><summary>Copy rows על טבלת המכולות</summary><div class="bd">
+      <ol class="rules">
+        <li>גוררים לתוך כרום את <code dir="ltr">AceChromExt\tests\fixtures\inttra-div-grid.html</code>. זה חיקוי של מסך Copy Container Details של INTTRA כפי שנראה בפורטל האמיתי ב-17.9: טבלה עם העמודות Container Number, Carrier Seal #, Shipper Seal # ו-HS Code. הדף נראה עירום, בלי עיצוב; זה בסדר.</li>
+        <li>לוחצים על ה-Q הכתום ומדביקים את המייל. השורה מתחת: <span dir="ltr">Read as: carrier email · EBKG18531408 · 3 containers · 3 with a seal</span>.</li>
+        <li>הכפתור הראשון הוא <b>Copy rows</b>, ולא Fill. זה מכוון: בטבלה האמיתית אין תיבות טקסט עד שלוחצים על תא, ולכן אי אפשר להקליד לתוכה; מעתיקים שורות ומדביקים. השורה שמתחת לכפתור אומרת אילו עמודות נכנסו לבלוק, בסדר של הטבלה.</li>
+        <li>פותחים אקסל ריק (או פנקס רשימות), לוחצים על התא A1 ומדביקים. זה מה שצריך להופיע, שלוש שורות ועמודה לכל כותרת:</li>
+      </ol>
+      <div class="tw" tabindex="0"><table>
+        <tr><th>Container Number</th><th>Carrier Seal #</th><th>Shipper Seal #</th></tr>
+        <tr><td><span dir="ltr">MSCU1234566</span></td><td><span dir="ltr">SL-4471209</span></td><td><span dir="ltr">SH-001</span></td></tr>
+        <tr><td><span dir="ltr">MSDU7654322</span></td><td><span dir="ltr">SL-4471210</span></td><td></td></tr>
+        <tr><td><span dir="ltr">TGHU7654320</span></td><td></td><td><span dir="ltr">SL-9</span></td></tr>
+      </table></div>
+      <p><b>למה זה נראה ככה, וזה גם מה שאומרים ליגאל:</b></p>
+      <ul class="dot">
+        <li>שורה 2 בלי חותם שולח: במייל לא היה אחד. תא ריק, לא ניחוש.</li>
+        <li>שורה 3: <span dir="ltr">SL-9</span> נחת בעמודת Shipper Seal ולא ב-Carrier Seal, כי במייל כתוב רק "Seal" בלי בעלים, וחותם בלי בעלים הוא של השולח, כי מי שסוגר את המכולה הוא השולח. רק המילים carrier, line או customs מזיזות אותו לעמודה השנייה.</li>
+        <li><span dir="ltr">SL-99001</span> ו-<span dir="ltr">SL-99002</span> לא בטבלה: הן חותמות רזרבה, לא צמודות למכולה.</li>
+        <li>התא הריק נשאר במקומו. אם היו משמיטים אותו, כל מה שאחריו היה זז עמודה אחת, וזה בדיוק מה שקרה בניסיון החי ב-17.9, כשהחותמות הודבקו לשום מקום.</li>
+      </ul>
+      <div class="warn"><b>בחיקוי אי אפשר להדביק לתוך הטבלה.</b> התאים שלו ריקים ולא נפתחים לעריכה. בפורטל האמיתי לוחצים על התא הראשון בטבלה ומדביקים, ו-INTTRA מפזר את הבלוק לתאים.</div>
+    </div></details>
+  </div>
+
+  <div class="blk">
+    <h2>חלק ד׳: בפגישה, על המחשב של יגאל</h2>
+    <p class="note">ו׳ 25.9, סוף סשן 2, אחרי ש-Deckhand v0 של Tidelane כבר בידיים שלו. עשר דקות, ואבא לידך.</p>
+
+    <details class="g"><summary>1 · מה מביאים</summary><div class="bd">
+      <ul class="dot">
+        <li>דיסק-און-קי עם ארבע התיקיות מחלק א׳: <code dir="ltr">dist-quickfill</code>, <code dir="ltr">dist-quickfill-playground</code>, <code dir="ltr">dist-inttra</code>, <code dir="ltr">dist</code>. במחשב של יגאל לא צריך Node ולא Git; רק Load unpacked.</li>
+        <li>על אותו דיסק: המייל לדוגמה כקובץ טקסט, והקובץ <code dir="ltr">inttra-div-grid.html</code> מתוך <code dir="ltr">tests\fixtures</code>.</li>
+        <li>הלשונית הזאת פתוחה בטלפון.</li>
+      </ul>
+      <p class="note">להניח שאין אינטרנט בחדר, ושהמחשב שלו יחליט להתעדכן בדיוק אז. הכול מהדיסק.</p>
+    </div></details>
+
+    <details class="g"><summary>2 · התקנה אצלו, חמש דקות</summary><div class="bd">
+      <ol class="rules">
+        <li>מעתיקים את ארבע התיקיות מהדיסק לתיקייה קבועה במחשב שלו, למשל <code dir="ltr">Documents\AceHelpers</code>. לא לטעון מהדיסק ישירות: כשהדיסק יוצא, התוסף נעלם.</li>
+        <li>בכרום שלו: <span dir="ltr">chrome://extensions</span>, Developer mode, Load unpacked, ארבע פעמים. Allow access to file URLs בכרטיס ה-playground.</li>
+        <li>בודקים שהחותמת בכותרת זהה לזו שבמחשב שלך.</li>
+      </ol>
+      <p class="note">אלה תוספים בלי הרשאת רשת ובלי גישה לסיסמאות; הם קוראים ומקלידים בדפי ACE ו-INTTRA בלבד. אם יגאל שואל, זה כתוב בקוד ונבדק אוטומטית בכל בנייה.</p>
+    </div></details>
+
+    <details class="g"><summary>3 · תסריט ההדגמה</summary><div class="bd">
+      <div class="tw" tabindex="0"><table>
+        <tr><th>דקה</th><th>על המסך</th><th>מה אומרים</th></tr>
+        <tr><td class="day">0</td><td>כלום</td><td>"איך אתה מכניס היום מספרי מכולה ל-INTTRA?" ולשתוק. הוא יראה.</td></tr>
+        <tr><td class="day">2</td><td>תרגול INTTRA מחלק ג׳, על המחשב שלו, עם המייל לדוגמה</td><td>"הדבקתי מייל. הוא קרא שלוש מכולות ושלוש חותמות. Copy rows."</td></tr>
+        <tr><td class="day">4</td><td>הדבקה לאקסל, שלוש השורות</td><td>"תא ריק איפה שהמייל לא אמר. הוא לא מנחש."</td></tr>
+        <tr><td class="day">5</td><td>רק אם יגאל מחובר ל-INTTRA ויש לו Shipping Instruction פתוחה: Copy Container Details, מדביקים בתיבה מייל אמיתי <b>שלו</b>, Copy rows, <b>הוא</b> לוחץ על התא הראשון ומדביק</td><td>"עכשיו אתה. הכפתור Create Containers שלך, לא של התוסף."</td></tr>
+        <tr><td class="day">8</td><td>תרגול ACE מחלק ב׳, Step 1 בלבד</td><td>"אותה תיבה, אותו רעיון, לצד של המכס."</td></tr>
+        <tr><td class="day">10</td><td>סוגרים</td><td>"מה היית רוצה שזה יעשה ולא עשה?" ולרשום.</td></tr>
+      </table></div>
+      <p class="note">אם אין לו מסך INTTRA פתוח, מדלגים על דקה 5. ההדגמה על החיקוי לבדה מספיקה; היא מראה בדיוק את הבלוק שהיה נכנס לטבלה.</p>
+    </div></details>
+
+    <details class="g"><summary>4 · מה נכון להגיד, ומה לא</summary><div class="bd">
+      <div class="warn"><b>שלוש עובדות שחייבות להיאמר בקול, כי הן נכונות.</b> אחת: על הפורטל החי, מסכי הטפסים של INTTRA <b>לא מתמלאים בכלל</b> היום; השדות שם עדיין לא נלכדו. הדרך היחידה שעובדת היא טבלת המכולות, דרך Copy rows. שתיים: זיהוי הטבלה בגרסה הנוכחית רץ מול חיקויים בלבד, וייתכן שבפורטל האמיתי הוא לא ימצא אותה. גם אז Copy rows מופיע, בסדר עמודות של ברירת מחדל, וזה עדיין נכון להדבקה. שלוש: Quickfill מהיר כי הוא פשוט, ובטוח רק כי מי שמפעיל קורא את הטופס. הוא לא בודק ספרות ביקורת ולא מזהיר. אף פעם לא להגיד "יותר בטוח".</div>
+      <p><b>מה הוא לעולם לא עושה:</b></p>
+      <ul class="dot">
+        <li>לא לוחץ Create Containers, Add Row, Save, Continue, Submit או Certify. הקליק האחרון של יגאל.</li>
+        <li>לא שולח כלום לשום מקום. אין לו הרשאת רשת.</li>
+        <li>לא נוגע בסיסמאות, בהתחברות או ב-MFA.</li>
+        <li>לא מנחש איזו מכולה מתוך כמה נכנסת לשדה המכולה היחיד של ACE. משאיר ריק.</li>
+      </ul>
+      <p><b>אם משהו לא עובד:</b> זה הרגע השימושי ביותר בפגישה, לא המביך. פותחים את INTTRA Helper, לוחצים Diagnostics, ומעתיקים את הבלוק <span dir="ltr">Page structure</span> לקובץ טקסט. זה מה שאבא צריך כדי לתקן את הזיהוי, וזה מה שאי אפשר להשיג בלי חשבון אמיתי.</p>
+    </div></details>
+
+    <details class="g"><summary>5 · תקלות נפוצות</summary><div class="bd">
+      <div class="tw" tabindex="0"><table>
+        <tr><th>מה קורה</th><th>מה עושים</th></tr>
+        <tr><td>הפופאפ אומר שהדף לא מזוהה</td><td>לרענן את הדף אחרי ההתקנה; תוסף רואה רק דפים שנטענו אחריו</td></tr>
+        <tr><td>החותמת בכותרת לא השתנתה אחרי בנייה</td><td>חץ הרענון בכרטיס, ואז לרענן את הדף</td></tr>
+        <tr><td>קובץ מהדיסק לא מזוהה</td><td>Allow access to file URLs בכרטיס ה-playground</td></tr>
+        <tr><td><span dir="ltr">Read as</span> מראה 0 containers</td><td>הודבק רק חלק מהמייל. להדביק את כולו, כולל השורות שנראות מיותרות</td></tr>
+        <tr><td><code dir="ltr">npm run verify</code> אדום</td><td>לא לתקן לבד. פלט מלא לאבא</td></tr>
+      </table></div>
+    </div></details>
+  </div>
+</section>
+
 <section id="t_yigal">
   <h2>מה לבקש ממנו לפני הנחיתה</h2>
   <div class="prog"><i id="prog_ask"></i></div>
@@ -701,7 +889,7 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
     <h2>לוח הסשנים</h2>
     <table>
       <tr><td class="day">ה׳ 24.9</td><td>רק לצפות. המערכת בכלל לא נפתחת היום.</td></tr>
-      <tr><td class="day">ו׳ 25.9</td><td>משווים בין המסך לרשומות האמיתיות של יגאל.</td></tr>
+      <tr><td class="day">ו׳ 25.9</td><td>משווים בין המסך לרשומות האמיתיות של יגאל. בסוף הסשן אתה מדגים את Quickfill; הכול בלשונית "הדגמה".</td></tr>
       <tr><td class="day">ש׳ 26.9</td><td>מי הם הצדדים האמיתיים, ומי מקבל איזו הרשאה.</td></tr>
       <tr><td class="day">א׳ 27.9</td><td>חריגים. הבוקר הכי חשוב בשבוע.</td></tr>
       <tr><td class="day">ב׳ 28.9</td><td>מכניסים משלוחים אמיתיים למערכת.</td></tr>
@@ -944,7 +1132,8 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
                'מפתח הצפנה ראשי נוצר ונשמר לא רק במחשב',
                'eSIM או חבילת גלישה לשני המכשירים',
                'לסגור עם יגאל מי נושא ב-4,427 הדולר ששולמו, ומה עוד "מארח" כולל',
-               'כל הסידורים סגורים עד שבת 19.9. המדינה נעצרת ב-20 עד 21.9'],
+               'כל הסידורים סגורים עד שבת 19.9. המדינה נעצרת ב-20 עד 21.9',
+               'לבן יש גישה לריפו AceChromExt בגיטהאב (או ZIP), ו-npm run verify עבר אצלו במחשב'],
     pre_ben: null
   };
 
@@ -953,12 +1142,15 @@ npx wrangler secret put QUICKBOOKS_CLIENT_SECRET</pre>
     ['טכנולוגיה', ['מחשב נייד ומטען','מתאם לשקע אמריקאי','סוללה ניידת לימים הארוכים','eSIM או חבילת גלישה מוכנה','הורדת מפות לוס אנג׳לס במצב לא מקוון','אוזניות. הטיסה לוס אנג׳לס היא 11 שעות רצוף']],
     ['לעבודה אצל יגאל', ['להיכנס ל-Tidelane עם חשבון הצפייה ולהסתובב בכל המסכים','לקרוא את רשימת מונחי המכולות בלשונית "אנגלית"','מחברת נייר ושני עטים. לא מחשב.','שעון או משהו שמראה שעה בלי לפתוח טלפון','קריאה של שבעת הכללים בלשונית "העבודה"','בגדים שמתאימים לשבת בבית של מבוגר']],
     ['לעסק שלך', ['תרגול הפתיחה באנגלית בקול רם, עשר פעמים','דוגמאות של שניים או שלושה אתרים שבנית, זמינות בטלפון','כרטיס ביקור פשוט: שם, מייל, לינק','רשימה של חמישה עסקים בסנטה מוניקה שאתה רוצה לנסות']],
-    ['בגדים וציוד', ['כובע וקרם הגנה 50','משקפי שמש','סווטשירט אחד לערבים ולמטוסים','בגד ים ומגבת','נעלי הליכה נוחות. תלך המון.','בקבוק מים רב פעמי']]
+    ['בגדים וציוד', ['כובע וקרם הגנה 50','משקפי שמש','סווטשירט אחד לערבים ולמטוסים','בגד ים ומגבת','נעלי הליכה נוחות. תלך המון.','בקבוק מים רב פעמי']],
+    /* Appended last on purpose: the ticks are saved by position, so a group
+       inserted higher up would shift every tick below it. */
+    ['להדגמה ליגאל, לפי לשונית "הדגמה"', ['Git ו-Node מותקנים במחשב','הריפו AceChromExt משוכפל ו-npm run verify נגמר ירוק','ארבע התיקיות טעונות בכרום והחותמת בכותרת נראית','תרגול ACE: ארבעת השלבים מולאו מהאקסל פעם אחת','תרגול INTTRA: Copy rows פעם אחת, ושלוש השורות נראו באקסל','דיסק-און-קי עם ארבע התיקיות, המייל לדוגמה והחיקוי של הטבלה','הרצה אחת של ההדגמה מול אבא, עם שעון']]
   ];
 
   var TABS = {
-    effi: [['t_today','היום'],['t_work_effi','העבודה'],['t_guide','מדריך'],['t_yigal','יגאל'],['t_pre_effi','לפני'],['t_flights','טיסות'],['t_docs','מסמכים'],['t_sos','חירום']],
-    ben:  [['t_today','היום'],['t_pre_ben','לפני'],['t_work_ben','העבודה'],['t_mission','המשימה'],['t_eng','אנגלית'],['t_log','יומן'],['t_flights','טיסות'],['t_docs','מסמכים'],['t_sos','חירום']]
+    effi: [['t_today','היום'],['t_work_effi','העבודה'],['t_guide','מדריך'],['t_yigal','יגאל'],['t_demo','הדגמה'],['t_pre_effi','לפני'],['t_flights','טיסות'],['t_docs','מסמכים'],['t_sos','חירום']],
+    ben:  [['t_today','היום'],['t_pre_ben','לפני'],['t_work_ben','העבודה'],['t_demo','הדגמה'],['t_mission','המשימה'],['t_eng','אנגלית'],['t_log','יומן'],['t_flights','טיסות'],['t_docs','מסמכים'],['t_sos','חירום']]
   };
 
   /* ---------- date helpers ---------- */
