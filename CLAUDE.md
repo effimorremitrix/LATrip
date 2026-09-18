@@ -14,9 +14,9 @@ It is used on phones, in the field, often on bad hotel wifi and sometimes offlin
 
 The app is served behind a per-user password gate. The Worker verifies the password and hands the page a verified identity, and the app reshapes entirely around it. This is not cosmetic; the two people need different things.
 
-**Effi** — running an unpaid consulting handover with a family friend named Yigal, who runs an ocean freight business in Los Angeles. His tabs: היום, העבודה (the Tidelane handover and Deckhand delivery), מדריך (the Tidelane workflow guide), יגאל (commercial and relationship items), לפני, טיסות, מסמכים, חירום.
+**Effi** — running an unpaid consulting handover with a family friend named Yigal, who runs an ocean freight business in Los Angeles. His tabs: היום, העבודה (the Tidelane handover and Deckhand delivery), מדריך (the Tidelane workflow guide), יגאל (commercial and relationship items), הדגמה (Ben's Quickfill demo, shared with Ben), לפני, טיסות, מסמכים, חירום.
 
-**Ben** — 14, owns a small AI website-building business, is on the trip to learn. His tabs: היום, לפני, העבודה, המשימה, אנגלית, יומן, טיסות, מסמכים, חירום.
+**Ben** — 14, owns a small AI website-building business, is on the trip to learn. His tabs: היום, לפני, העבודה, הדגמה, המשימה, אנגלית, יומן, טיסות, מסמכים, חירום.
 
 **Guest** — a third, read-only account behind a shared password, for family and friends who
 want to know where we are. It gets its own template, `src/guest.html`: the itinerary
@@ -192,10 +192,18 @@ Deckhand removes that retyping. It is the core deliverable of the two weeks.
 **v0 is built** (`28ba223` in the Yigal repo) and lands in Yigal's hands on **25.9,
 session 2**: extraction only, email or attachment in, paste-ready block out, no browser
 automation, nothing stored, and never a portal password. Session 3 on 26.9 hardens it
-against the ugly emails in his real inbox. What is still undecided is **v1**, the
-browser-assist step, and that decision comes from the numbers counted in session 1 on
-24.9, not before. **v2**, autonomous inbox intake, stays out of bounds for the visit.
-Do not write copy that decides v1.
+against the ugly emails in his real inbox. **v1**, the browser-assist step, has a named
+candidate but no decision: the candidate is the **Quickfill Helper** from
+`effimorremitrix/AceChromExt` (one paste box in Chrome that types the block into the
+open ACE or INTTRA form), which Ben demos to Yigal on 25.9 from the הדגמה tab. Whether
+v1 is built at all still comes from the numbers counted in session 1 on 24.9, not
+before, and no copy may say otherwise. **v2**, autonomous inbox intake, stays out of
+bounds for the visit.
+
+Two things are called Deckhand. LA Trip's "Deckhand v0" is the Tidelane page in the
+Yigal repo. `AceChromExt` has its own `deckhand/` extraction module, which Quickfill
+runs inside the extension. The app never calls the second one "Deckhand v0"; it says
+Quickfill reads the email itself.
 
 Deckhand is **not** live ACE and INTTRA integration. That stays mocked and out of
 bounds, because real access is a vendor agreement and not code. The app draws that line
@@ -245,6 +253,34 @@ by the guest view, and `src/index.js` strips it back out of the payload it hands
 as text is a whole city. The two fixed addresses deliberately carry **no** `ll`; a
 verbatim street address geocodes more precisely than a coordinate typed by hand. They
 come from Trip facts above and are quoted verbatim.
+
+## The הדגמה tab
+
+Shown to Ben and to Effi, Hebrew, addressed to Ben. It is a rendering of
+`docs/QUICKFILL.md` sections 5, 5a and 6 and `docs/INSTALLATION.md` section 3 in
+`effimorremitrix/AceChromExt`, and a **copy, not the source**: when those documents
+change, re-sync the tab deliberately, as with מדריך. Nothing in `AceChromExt` changes
+from here.
+
+Four things in it are load-bearing:
+
+1. **The quoted email and the three-row block are that repo's fixtures**, not
+   examples written for the app: `tests/fixtures/deckhand/04-booking-confirmation.txt`,
+   and the Copy rows output pinned by `tests/inttraContent.test.ts` (`MSCU1234566 /
+   SL-4471209 / SH-001`, `MSDU7654322 / SL-4471210 / blank`, `TGHU7654320 / blank /
+   SL-9`). They are quoted so Ben's screen matches the text; if the fixture changes,
+   the tab changes with it.
+2. **Three honesty lines stay as written**: on the live INTTRA portal the form screens
+   fill nothing today; the container grid route is Copy rows and paste, and the grid may
+   not be found on the live screen, in which case Copy rows still copies in the default
+   column order; Quickfill is fast because it is simple and safe only because the operator
+   reads the form, never "safer".
+3. **The "never does" list**: no Create Containers, Add Row, Save, Continue, Submit or
+   Certify; no network; no passwords; no guessing which container goes into ACE's single
+   field.
+4. **Rule 5 still applies.** Effi leads and answers; Ben shows. The tab's checklist group
+   in לפני is appended last so the saved ticks keep their positions, and it lists what is
+   ready, not what is owed.
 
 ## The guest view
 
@@ -324,6 +360,7 @@ Some copy in this app is load-bearing and was written deliberately. Do not softe
 - Effi's four uncomfortable conversations in the יגאל tab: the USD 4,427.20 already paid, the one-sentence IP carve-out, the three-hour daily boundary, and the ownership transfer on 3 October. Conversations 2 and 4 each carry a מסלול א׳ version and a מסלול ב׳ version, because the tracks are opposites on ownership. Both versions must stay; deleting either leaves the wrong script to read aloud.
 - The security checklist in Effi's העבודה tab. Those items must close before real shipment data enters Tidelane.
 - The English pitch script in Ben's המשימה tab. It is written to be spoken by a nervous 14-year-old, not to read well.
+- The three honesty lines and the "never does" list in the הדגמה tab (see The הדגמה tab above). They come from `AceChromExt`'s own status and are the difference between a demo and a promise.
 
 ## Related
 
